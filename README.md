@@ -20,7 +20,9 @@ npm install --save-dev cache-loader
 
 <h2 align="center">Usage</h2>
 
-Add this loading in from of other (expensive) loaders to cache the result on disk.
+Add this loader in front of other (expensive) loaders to cache the result on disk.
+
+Note that there is an overhead for saving the reading and saving the cache file, so only use this loader to cache expensive loaders.
 
 <h2 align="center">Examples</h2>
 
