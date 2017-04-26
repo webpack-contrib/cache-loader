@@ -5,8 +5,6 @@
 [![chat][chat]][chat-url]
 
 <div align="center">
-  <!-- replace with accurate logo e.g from https://worldvectorlogo.com/ -->
-  <img width="200" height="200" src="https://cdn.worldvectorlogo.com/logos/javascript.svg">
   <a href="https://webpack.js.org/">
     <img width="200" height="200" vspace="" hspace="25" src="https://cdn.rawgit.com/webpack/media/e7485eb2/logo/icon-square-big.svg">
   </a>
@@ -22,74 +20,54 @@ npm install --save-dev cache-loader
 
 <h2 align="center">Usage</h2>
 
-### Lorem
-
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Add this loading in from of other (expensive) loaders to cache the result on disk.
 
 <h2 align="center">Examples</h2>
 
 **webpack.config.js**
 
 ```js
-// Loader/plugin setup here..
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        include: path.resolve("src"),
+        use: [
+          "cache-loader",
+          "babel-loader"
+        ]
+      }
+    ]
+  }
+}
 ```
 
-**file.ext**
+**with options**
 
 ```js
-// Source code here...
-```
-
-**bundle.js**
-
-```js
-require("cache-loader!./file.EXT");
-
-// Bundle code here...
+use: [
+  {
+    loader: "cache-loader",
+    options: {
+      // provide a cache directory where cache items should be stored
+      cacheDirectory: path.resolve(".cache")
+    }
+  },
+  "babel-loader"
+]
 ```
 
 <h2 align="center">Maintainers</h2>
-
-```bash
-https://api.github.com/users/MAINTAINER
-```
 
 <table>
   <tbody>
     <tr>
       <td align="center">
-        <a href="https://github.com/">
-          <img width="150" height="150" src="https://avatars.githubusercontent.com/u/5419992?v=3&s=150">
+        <a href="https://github.com/sokra">
+          <img width="150" height="150" src="https://github.com/sokra.png?size=150">
           </br>
-          Name
-        </a>
-      </td>
-      <td align="center">
-        <a href="https://github.com/">
-          <img width="150" height="150" src="https://avatars.githubusercontent.com/u/5419992?v=3&s=150">
-          </br>
-          Name
-        </a>
-      </td>
-      <td align="center">
-        <a href="https://github.com/">
-          <img width="150" height="150" src="https://avatars.githubusercontent.com/u/5419992?v=3&s=150">
-          </br>
-          Name
-        </a>
-      </td>
-      <td align="center">
-        <a href="https://github.com/">
-          <img width="150" height="150" src="https://avatars.githubusercontent.com/u/5419992?v=3&s=150">
-          </br>
-          Name
-        </a>
-      </td>
-      <td align="center">
-        <a href="https://github.com/">
-          <img width="150" height="150" src="https://avatars.githubusercontent.com/u/5419992?v=3&s=150">
-          </br>
-          Name
+          sokra
         </a>
       </td>
     </tr>
