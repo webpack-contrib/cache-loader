@@ -1,6 +1,6 @@
 {
   "name": "cache-loader",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Caches the result of following loaders on disk.",
   "main": "dist/cjs.js",
   "scripts": {
