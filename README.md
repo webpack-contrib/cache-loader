@@ -22,7 +22,7 @@ npm install --save-dev cache-loader
 
 Add this loader in front of other (expensive) loaders to cache the result on disk.
 
-Note that there is an overhead for saving the reading and saving the cache file, so only use this loader to cache expensive loaders.
+Note that there is an overhead for saving the reading and saving the cache file, so only use this loader to cache expensive loaders. ASDF
 
 <h2 align="center">Examples</h2>
 
