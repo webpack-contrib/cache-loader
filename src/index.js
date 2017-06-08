@@ -66,50 +66,44 @@ function pitch(remainingRequest, prevRequest, dataInput) {
   const hash = digest(remainingRequest);
   const cacheFile = path.join(cacheDirectory, `${hash}.json`);
   data.cacheFile = cacheFile;
-  fs.exists(cacheFile, (exist) => {
-    if (!exist) {
+  fs.readFile(cacheFile, 'utf-8', (readFileErr, content) => {
+    if (readFileErr) {
       callback();
       return;
     }
-    fs.readFile(cacheFile, 'utf-8', (readFileErr, content) => {
-      if (readFileErr) {
-        callback();
-        return;
-      }
-      data.fileExists = true;
-      let cacheData;
-      try {
-        cacheData = JSON.parse(content);
-      } catch (e) {
-        callback();
-        return;
-      }
-      if (cacheData.remainingRequest !== remainingRequest) {
-        // in case of a hash conflict
-        callback();
-        return;
-      }
-      async.each(cacheData.dependencies.concat(cacheData.contextDependencies), (dep, eachCallback) => {
-        fs.stat(dep.path, (statErr, stats) => {
-          if (statErr) {
-            eachCallback(statErr);
-            return;
-          }
-          if (stats.mtime.getTime() !== dep.mtime) {
-            eachCallback(true);
-            return;
-          }
-          eachCallback();
-        });
-      }, (err) => {
-        if (err) {
-          callback();
+    data.fileExists = true;
+    let cacheData;
+    try {
+      cacheData = JSON.parse(content);
+    } catch (e) {
+      callback();
+      return;
+    }
+    if (cacheData.remainingRequest !== remainingRequest) {
+      // in case of a hash conflict
+      callback();
+      return;
+    }
+    async.each(cacheData.dependencies.concat(cacheData.contextDependencies), (dep, eachCallback) => {
+      fs.stat(dep.path, (statErr, stats) => {
+        if (statErr) {
+          eachCallback(statErr);
           return;
         }
-        cacheData.dependencies.forEach(dep => this.addDependency(dep.path));
-        cacheData.contextDependencies.forEach(dep => this.addContextDependency(dep.path));
-        callback(null, ...cacheData.result);
+        if (stats.mtime.getTime() !== dep.mtime) {
+          eachCallback(true);
+          return;
+        }
+        eachCallback();
       });
+    }, (err) => {
+      if (err) {
+        callback();
+        return;
+      }
+      cacheData.dependencies.forEach(dep => this.addDependency(dep.path));
+      cacheData.contextDependencies.forEach(dep => this.addContextDependency(dep.path));
+      callback(null, ...cacheData.result);
     });
   });
 }
