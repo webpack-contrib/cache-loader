@@ -37,6 +37,7 @@ function loader(...args) {
     const writeCacheFile = () => {
       fs.writeFile(data.cacheFile, JSON.stringify({
         remainingRequest: data.remainingRequest,
+        cacheIdentifier: data.cacheIdentifier,
         dependencies: deps,
         contextDependencies: contextDeps,
         result: args,
@@ -76,6 +77,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
   const hash = digest(remainingRequest + cacheIdentifier);
   const cacheFile = path.join(cacheDirectory, `${hash}.json`);
   data.remainingRequest = remainingRequest;
+  data.cacheIdentifier = cacheIdentifier;
   data.cacheFile = cacheFile;
   fs.readFile(cacheFile, 'utf-8', (readFileErr, content) => {
     if (readFileErr) {
@@ -90,7 +92,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
       callback();
       return;
     }
-    if (cacheData.remainingRequest !== remainingRequest) {
+    if (cacheData.remainingRequest !== remainingRequest || cacheData.cacheIdentifier !== cacheIdentifier) {
       // in case of a hash conflict
       callback();
       return;
