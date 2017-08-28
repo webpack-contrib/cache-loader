@@ -4,9 +4,10 @@ const path = require('path');
 const mkdirp = require('mkdirp');
 const async = require('async');
 const loaderUtils = require('loader-utils');
-const pkg = require('../package.json');
+const pkgVersion = require('../package.json').version;
 
 const defaultCacheDirectory = path.resolve('.cache-loader');
+const ENV = process.env.NODE_ENV || 'development';
 
 function loader(...args) {
   const callback = this.async();
@@ -65,16 +66,13 @@ function pitch(remainingRequest, prevRequest, dataInput) {
   const loaderOptions = loaderUtils.getOptions(this) || {};
   const defaultOptions = {
     cacheDirectory: defaultCacheDirectory,
-    cacheIdentifier: JSON.stringify({
-      'cache-loader': pkg.version,
-      env: process.env.NODE_ENV || 'development',
-    }),
+    cacheIdentifier: `cache-loader:${pkgVersion} ${ENV}`,
   };
   const options = Object.assign({}, defaultOptions, loaderOptions);
   const { cacheIdentifier, cacheDirectory } = options;
   const data = dataInput;
   const callback = this.async();
-  const hash = digest(remainingRequest + cacheIdentifier);
+  const hash = digest(`${cacheIdentifier}\n${remainingRequest}`);
   const cacheFile = path.join(cacheDirectory, `${hash}.json`);
   data.remainingRequest = remainingRequest;
   data.cacheIdentifier = cacheIdentifier;
