@@ -19,7 +19,8 @@
     "travis:coverage": "npm run test:coverage -- --runInBand",
     "travis:lint": "npm run lint && npm run security",
     "travis:test": "npm run test -- --runInBand",
-    "webpack-defaults": "webpack-defaults"
+    "webpack-defaults": "webpack-defaults",
+    "appveyor:test": "npm run test"
   },
   "author": "Tobias Koppers @sokra",
   "license": "MIT",
@@ -47,13 +48,14 @@
     "eslint-config-webpack": "^1.2.1",
     "eslint-plugin-import": "^2.2.0",
     "jest": "^20.0.4",
+    "jest-cli": "^20.0.4",
     "lint-staged": "^3.4.0",
     "nsp": "^2.6.3",
     "pre-commit": "^1.2.2",
     "react": "^15.5.4",
     "standard-version": "^4.1.0",
     "webpack": "^2.6.1",
-    "webpack-defaults": "^1.1.1"
+    "webpack-defaults": "^1.5.0"
   },
   "engines": {
     "node": ">= 4.3 < 5.0.0 || >= 5.10"
@@ -67,5 +69,8 @@
       "eslint --fix",
       "git add"
     ]
+  },
+  "peerDependencies": {
+    "webpack": "^2.0.0 || ^3.0.0"
   }
 }
