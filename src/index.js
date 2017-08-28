@@ -4,6 +4,10 @@ const path = require('path');
 const mkdirp = require('mkdirp');
 const async = require('async');
 const loaderUtils = require('loader-utils');
+const pkgVersion = require('../package.json').version;
+
+const defaultCacheDirectory = path.resolve('.cache-loader');
+const ENV = process.env.NODE_ENV || 'development';
 
 function loader(...args) {
   const callback = this.async();
@@ -34,6 +38,7 @@ function loader(...args) {
     const writeCacheFile = () => {
       fs.writeFile(data.cacheFile, JSON.stringify({
         remainingRequest: data.remainingRequest,
+        cacheIdentifier: data.cacheIdentifier,
         dependencies: deps,
         contextDependencies: contextDeps,
         result: args,
@@ -58,13 +63,19 @@ function loader(...args) {
 }
 
 function pitch(remainingRequest, prevRequest, dataInput) {
-  const options = loaderUtils.getOptions(this) || {};
-  const cacheDirectory = options.cacheDirectory || path.resolve('.cache-loader');
+  const loaderOptions = loaderUtils.getOptions(this) || {};
+  const defaultOptions = {
+    cacheDirectory: defaultCacheDirectory,
+    cacheIdentifier: `cache-loader:${pkgVersion} ${ENV}`,
+  };
+  const options = Object.assign({}, defaultOptions, loaderOptions);
+  const { cacheIdentifier, cacheDirectory } = options;
   const data = dataInput;
-  data.remainingRequest = remainingRequest;
   const callback = this.async();
-  const hash = digest(remainingRequest);
+  const hash = digest(`${cacheIdentifier}\n${remainingRequest}`);
   const cacheFile = path.join(cacheDirectory, `${hash}.json`);
+  data.remainingRequest = remainingRequest;
+  data.cacheIdentifier = cacheIdentifier;
   data.cacheFile = cacheFile;
   fs.readFile(cacheFile, 'utf-8', (readFileErr, content) => {
     if (readFileErr) {
@@ -79,7 +90,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
       callback();
       return;
     }
-    if (cacheData.remainingRequest !== remainingRequest) {
+    if (cacheData.remainingRequest !== remainingRequest || cacheData.cacheIdentifier !== cacheIdentifier) {
       // in case of a hash conflict
       callback();
       return;
