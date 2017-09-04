@@ -12,8 +12,9 @@ const ENV = process.env.NODE_ENV || 'development';
 function loader(...args) {
   const callback = this.async();
   const { data } = this;
-  const dependencies = this.getDependencies().concat(this.loaders.map(l => l.path));
-  const contextDependencies = this.getContextDependencies();
+  const { fileExists, cacheFile, remainingRequest, cacheIdentifier, overrideDependencies } = data;
+  const dependencies = overrideDependencies || this.getDependencies().concat(this.loaders.map(l => l.path));
+  const contextDependencies = overrideDependencies ? [] : this.getContextDependencies();
   const toDepDetails = (dep, mapCallback) => {
     fs.stat(dep, (err, stats) => {
       if (err) {
@@ -36,9 +37,9 @@ function loader(...args) {
     }
     const [deps, contextDeps] = taskResults;
     const writeCacheFile = () => {
-      fs.writeFile(data.cacheFile, JSON.stringify({
-        remainingRequest: data.remainingRequest,
-        cacheIdentifier: data.cacheIdentifier,
+      fs.writeFile(cacheFile, JSON.stringify({
+        remainingRequest,
+        cacheIdentifier,
         dependencies: deps,
         contextDependencies: contextDeps,
         result: args,
@@ -47,11 +48,11 @@ function loader(...args) {
         callback(null, ...args);
       });
     };
-    if (data.fileExists) {
+    if (fileExists) {
       // for performance skip creating directory
       writeCacheFile();
     } else {
-      mkdirp(path.dirname(data.cacheFile), (mkdirErr) => {
+      mkdirp(path.dirname(cacheFile), (mkdirErr) => {
         if (mkdirErr) {
           callback(null, ...args);
           return;
@@ -69,7 +70,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
     cacheIdentifier: `cache-loader:${pkgVersion} ${ENV}`,
   };
   const options = Object.assign({}, defaultOptions, loaderOptions);
-  const { cacheIdentifier, cacheDirectory } = options;
+  const { cacheIdentifier, cacheDirectory, overrideDependencies } = options;
   const data = dataInput;
   const callback = this.async();
   const hash = digest(`${cacheIdentifier}\n${remainingRequest}`);
@@ -77,6 +78,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
   data.remainingRequest = remainingRequest;
   data.cacheIdentifier = cacheIdentifier;
   data.cacheFile = cacheFile;
+  data.overrideDependencies = overrideDependencies;
   fs.readFile(cacheFile, 'utf-8', (readFileErr, content) => {
     if (readFileErr) {
       callback();
@@ -95,7 +97,8 @@ function pitch(remainingRequest, prevRequest, dataInput) {
       callback();
       return;
     }
-    async.each(cacheData.dependencies.concat(cacheData.contextDependencies), (dep, eachCallback) => {
+    const dependencies = cacheData.dependencies.concat(cacheData.contextDependencies);
+    async.each(dependencies, (dep, eachCallback) => {
       fs.stat(dep.path, (statErr, stats) => {
         if (statErr) {
           eachCallback(statErr);

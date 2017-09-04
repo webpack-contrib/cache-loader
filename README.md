@@ -43,12 +43,15 @@ module.exports = {
 
 > ⚠️ Note that there is an overhead for saving the reading and saving the cache file, so only use this loader to cache expensive loaders.
 
+The loader checks timestamp values of all dependencies of the cached modules. Only if modification timestamp hasn't changed the cached result is used.
+
 <h2 align="center">Options</h2>
 
 |Name|Type|Default|Description|
 |:--:|:--:|:-----:|:----------|
 |**`cacheDirectory`**|`{String}`|`path.resolve('.cache-loader')`|Provide a cache directory where cache items should be stored|
 |**`cacheIdentifier`**|`{String}`|`cache-loader:{version} {process.env.NODE_ENV}`|Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders.|
+|**`overrideDependencies`**|`{Array<String>}`|none|Provide different dependencies for the modules. This override the default dependencies.|
 
 <h2 align="center">Examples</h2>
 
@@ -94,6 +97,33 @@ module.exports = {
   }
 }
 ```
+
+<h2 align="center">Hints</h2>
+
+For extra performance you could override the dependencies of modules for rarly changing modules:
+
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: [
+          {
+            loader: 'cache-loader',
+            options: {
+              overrideDependencies: [path.resolve('yarn.lock')]
+            }
+          }
+        ],
+        include: path.resolve('node_modules')
+      }
+    ]
+  }
+}
+```
+
+With this config timestamps from files are no longer checked. Instead only the timestamp of the yarn lockfile is checked, which should be ok for normal yarn usage.
 
 <h2 align="center">Maintainers</h2>
 
