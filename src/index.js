@@ -1,11 +1,13 @@
 const fs = require('fs');
 const crypto = require('crypto');
 const path = require('path');
+const findCacheDir = require('find-cache-dir');
 const mkdirp = require('mkdirp');
 const async = require('async');
 const loaderUtils = require('loader-utils');
-const pkgVersion = require('../package.json').version;
+const pkg = require('../package.json');
 
+const defaultCacheDirectory = findCacheDir({ name: pkg.name });
 const ENV = process.env.NODE_ENV || 'development';
 
 const defaults = {
