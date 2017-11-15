@@ -23,15 +23,29 @@ function loader(...args) {
   const { data } = this;
   const dependencies = this.getDependencies().concat(this.loaders.map(l => l.path));
   const contextDependencies = this.getContextDependencies();
+
+  // Should the file get cached?
+  let cache = true;
+
   const toDepDetails = (dep, mapCallback) => {
     fs.stat(dep, (err, stats) => {
       if (err) {
         mapCallback(err);
         return;
       }
+
+      const mtime = stats.mtime.getTime();
+
+      if (mtime / 1000 >= Math.floor(data.startTime / 1000)) {
+        // Don't trust mtime.
+        // File was changed while compiling
+        // or it could be an inaccurate filesystem.
+        cache = false;
+      }
+
       mapCallback(null, {
         path: dep,
-        mtime: stats.mtime.getTime(),
+        mtime,
       });
     });
   };
@@ -41,6 +55,10 @@ function loader(...args) {
     cb => async.mapLimit(contextDependencies, 20, toDepDetails, cb),
   ], (err, taskResults) => {
     if (err) {
+      callback(null, ...args);
+      return;
+    }
+    if (!cache) {
       callback(null, ...args);
       return;
     }
@@ -89,6 +107,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
       });
     }, (err) => {
       if (err) {
+        data.startTime = Date.now();
         callback();
         return;
       }
