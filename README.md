@@ -47,11 +47,11 @@ module.exports = {
 
 |Name|Type|Default|Description|
 |:--:|:--:|:-----:|:----------|
-|**`cacheKey`**|`{Function(options, request) -> {String}}`|`undefined`|Allows you to override default cache key generator.|
+|**`cacheKey`**|`{Function(options, request) -> {String}}`|`undefined`|Allows you to override default cache key generator|
 |**`cacheDirectory`**|`{String}`|`path.resolve('.cache-loader')`|Provide a cache directory where cache items should be stored (used for default read/write implementation)|
-|**`cacheIdentifier`**|`{String}`|`cache-loader:{version} {process.env.NODE_ENV}`|Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders.  (used for default read/write implementation)|
-|**`write`**|`{Function(cacheKey, data, callback) -> {void}}`|`undefined`|Allows you to override default write cache data to file (e.g. Redis, memcached).|
-|**`read`**|`{Function(cacheKey, callback) -> {void}}`|`undefined`|Allows you to override default read cache data from file.|
+|**`cacheIdentifier`**|`{String}`|`cache-loader:{version} {process.env.NODE_ENV}`|Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders (used for default read/write implementation)|
+|**`write`**|`{Function(cacheKey, data, callback) -> {void}}`|`undefined`|Allows you to override default write cache data to file (e.g. Redis, memcached)|
+|**`read`**|`{Function(cacheKey, callback) -> {void}}`|`undefined`|Allows you to override default read cache data from file|
 
 <h2 align="center">Examples</h2>
 
@@ -73,40 +73,16 @@ module.exports = {
 }
 ```
 
-### `Options`
+### `Database Integration`
 
 **webpack.config.js**
 ```js
-module.exports = {
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        use: [
-          {
-            loader: 'cache-loader',
-            options: {
-              cacheDirectory: path.resolve('.cache')
-            }
-          },
-          'babel-loader'
-        ],
-        include: path.resolve('src')
-      }
-    ]
-  }
-}
-```
-
-### Database Intergration
-
-**webpack.config.js**
-```js
-const redis = require('redis'); // Or different database client - memcached, mongodb, ...
+// Or different database client - memcached, mongodb, ...
+const redis = require('redis');
 const crypto = require('crypto');
 
 // ...
-// ... connect to client
+// connect to client
 // ...
 
 const BUILD_CACHE_TIMEOUT = 24 * 3600; // 1 day
@@ -115,16 +91,13 @@ function digest(str) {
   return crypto.createHash('md5').update(str).digest('hex');
 }
 
-/**
- * Generate own cache key
- */
+// Generate own cache key
 function cacheKey(options, request) {
   return `build:cache:${digest(request)}`;
 }
 
-/**
- * Read data from database and parse them
- */
+
+// Read data from database and parse them
 function read(key, callback) {
   client.get(key, (err, result) => {
     if (err) {
@@ -144,9 +117,8 @@ function read(key, callback) {
   });
 }
 
-/**
- * Write data to database under cacheKey
- */
+
+// Write data to database under cacheKey
 function write(key, data, callback) {
   client.set(key, JSON.stringify(data), 'EX', BUILD_CACHE_TIMEOUT, callback);
 }
@@ -198,13 +170,6 @@ module.exports = {
           <img width="150" height="150" src="https://github.com/d3viant0ne.png?v=3&s=150">
           </br>
           Joshua Wiens
-        </a>
-      </td>
-      <td align="center">
-        <a href="https://github.com/sapegin">
-          <img width="150" height="150" src="https://github.com/sapegin.png?v=3&s=150">
-          </br>
-          Artem Sapegin
         </a>
       </td>
       <td align="center">
