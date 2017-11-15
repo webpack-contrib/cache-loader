@@ -9,20 +9,25 @@ const pkgVersion = require('../package.json').version;
 const ENV = process.env.NODE_ENV || 'development';
 
 const defaults = {
-  cacheDirectory: path.resolve('.cache-loader'),
-  cacheIdentifier: `cache-loader:${pkgVersion} ${ENV}`,
-  cacheKey,
+  directory: path.resolve('.cache-loader'),
+  identifier: `cache-loader:${pkgVersion} ${ENV}`,
+  key,
   read,
   write,
 };
 
 function loader(...args) {
+  const { data } = this;
+
   const options = Object.assign({}, defaults, loaderUtils.getOptions(this));
   const { write: writeFn } = options;
+
   const callback = this.async();
-  const { data } = this;
-  const dependencies = this.getDependencies().concat(this.loaders.map(l => l.path));
+
+  const dependencies = this.getDependencies()
+    .concat(this.loaders.map(loader => loader.path));
   const contextDependencies = this.getContextDependencies();
+
   const toDepDetails = (dep, mapCallback) => {
     fs.stat(dep, (err, stats) => {
       if (err) {
@@ -45,7 +50,8 @@ function loader(...args) {
       return;
     }
     const [deps, contextDeps] = taskResults;
-    writeFn(data.cacheKey, {
+
+    writeFn(data.key, {
       remainingRequest: data.remainingRequest,
       dependencies: deps,
       contextDependencies: contextDeps,
@@ -60,12 +66,13 @@ function loader(...args) {
 function pitch(remainingRequest, prevRequest, dataInput) {
   const options = Object.assign({}, defaults, loaderUtils.getOptions(this));
   const callback = this.async();
-  const { read: readFn, cacheKey: cacheKeyFn } = options;
+  const { read: readFn, key: keyFn } = options;
   const data = dataInput;
 
   data.remainingRequest = remainingRequest;
-  data.cacheKey = cacheKeyFn(options, remainingRequest);
-  readFn(data.cacheKey, (readErr, cacheData) => {
+  data.key = keyFn(options, remainingRequest);
+
+  readFn(data.key, (readErr, cacheData) => {
     if (readErr) {
       callback();
       return;
@@ -79,10 +86,12 @@ function pitch(remainingRequest, prevRequest, dataInput) {
       fs.stat(dep.path, (statErr, stats) => {
         if (statErr) {
           eachCallback(statErr);
+
           return;
         }
         if (stats.mtime.getTime() !== dep.mtime) {
           eachCallback(true);
+
           return;
         }
         eachCallback();
@@ -90,10 +99,13 @@ function pitch(remainingRequest, prevRequest, dataInput) {
     }, (err) => {
       if (err) {
         callback();
+
         return;
       }
+
       cacheData.dependencies.forEach(dep => this.addDependency(dep.path));
       cacheData.contextDependencies.forEach(dep => this.addContextDependency(dep.path));
+
       callback(null, ...cacheData.result);
     });
   });
@@ -142,11 +154,11 @@ function read(key, callback) {
   });
 }
 
-function cacheKey(options, request) {
-  const { cacheIdentifier, cacheDirectory } = options;
-  const hash = digest(`${cacheIdentifier}\n${request}`);
+function key(options, request) {
+  const { identifier, directory } = options;
+  const hash = digest(`${identifier}\n${request}`);
 
-  return path.join(cacheDirectory, `${hash}.json`);
+  return path.join(directory, `${hash}.json`);
 }
 
 export { loader as default, pitch };

@@ -47,11 +47,11 @@ module.exports = {
 
 |Name|Type|Default|Description|
 |:--:|:--:|:-----:|:----------|
-|**`cacheKey`**|`{Function(options, request) -> {String}}`|`undefined`|Allows you to override default cache key generator|
-|**`cacheDirectory`**|`{String}`|`path.resolve('.cache-loader')`|Provide a cache directory where cache items should be stored (used for default read/write implementation)|
-|**`cacheIdentifier`**|`{String}`|`cache-loader:{version} {process.env.NODE_ENV}`|Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders (used for default read/write implementation)|
+|**`key`**|`{Function(options, request) -> {String}}`|`undefined`|Allows you to override default cache key generator|
+|**`directory`**|`{String}`|`path.resolve('.cache-loader')`|Provide a cache directory where cache items should be stored (used for default read/write implementation)|
+|**`identifier`**|`{String}`|`cache-loader:{version} {process.env.NODE_ENV}`|Provide an invalidation cache identifier which is used to generate the hashes. You can use it for extra dependencies of loaders (used for default read/write implementation)|
 |**`write`**|`{Function(cacheKey, data, callback) -> {void}}`|`undefined`|Allows you to override default write cache data to file (e.g. Redis, memcached)|
-|**`read`**|`{Function(cacheKey, callback) -> {void}}`|`undefined`|Allows you to override default read cache data from file|
+|**`read`**|`{Function(key, callback) -> {void}}`|`undefined`|Allows you to override default read cache data from file|
 
 <h2 align="center">Examples</h2>
 
@@ -91,11 +91,9 @@ function digest(str) {
   return crypto.createHash('md5').update(str).digest('hex');
 }
 
-// Generate own cache key
-function cacheKey(options, request) {
+function key(options, request) {
   return `build:cache:${digest(request)}`;
 }
-
 
 // Read data from database and parse them
 function read(key, callback) {
@@ -117,8 +115,7 @@ function read(key, callback) {
   });
 }
 
-
-// Write data to database under cacheKey
+// Write data to the database under the generated key
 function write(key, data, callback) {
   client.set(key, JSON.stringify(data), 'EX', BUILD_CACHE_TIMEOUT, callback);
 }
@@ -132,7 +129,7 @@ module.exports = {
           {
             loader: 'cache-loader',
             options: {
-              cacheKey,
+              key,
               read,
               write,
             }
