@@ -10,7 +10,7 @@
     <img width="200" height="200" src="https://cdn.rawgit.com/webpack/media/e7485eb2/logo/icon-square-big.svg">
   </a>
   <h1>Cache Loader</h1>
-  <p>Caches the result of following loaders on disk</p>
+  <p>Caches the result of following loaders on disk (default) or in the database</p>
 </div>
 
 <h2 align="center">Install</h2>
@@ -47,8 +47,11 @@ module.exports = {
 
 |Name|Type|Default|Description|
 |:--:|:--:|:-----:|:----------|
-|**`cacheDirectory`**|`{String}`|`path.resolve('.cache-loader')`|Provide a cache directory where cache items should be stored|
-|**`cacheIdentifier`**|`{String}`|`cache-loader:{version} {process.env.NODE_ENV}`|Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders.|
+|**`cacheKey`**|`{Function(options, request) -> {String}}`|`undefined`|Allows you to override default cache key generator.|
+|**`cacheDirectory`**|`{String}`|`path.resolve('.cache-loader')`|Provide a cache directory where cache items should be stored (used for default read/write implementation)|
+|**`cacheIdentifier`**|`{String}`|`cache-loader:{version} {process.env.NODE_ENV}`|Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders.  (used for default read/write implementation)|
+|**`write`**|`{Function(cacheKey, data, callback) -> {void}}`|`undefined`|Allows you to override default write cache data to file (e.g. Redis, memcached).|
+|**`read`**|`{Function(cacheKey, callback) -> {void}}`|`undefined`|Allows you to override default read cache data from file.|
 
 <h2 align="center">Examples</h2>
 
@@ -84,6 +87,82 @@ module.exports = {
             loader: 'cache-loader',
             options: {
               cacheDirectory: path.resolve('.cache')
+            }
+          },
+          'babel-loader'
+        ],
+        include: path.resolve('src')
+      }
+    ]
+  }
+}
+```
+
+### Database Intergration
+
+**webpack.config.js**
+```js
+const redis = require('redis'); // Or different database client - memcached, mongodb, ...
+const crypto = require('crypto');
+
+// ...
+// ... connect to client
+// ...
+
+const BUILD_CACHE_TIMEOUT = 24 * 3600; // 1 day
+
+function digest(str) {
+  return crypto.createHash('md5').update(str).digest('hex');
+}
+
+/**
+ * Generate own cache key
+ */
+function cacheKey(options, request) {
+  return `build:cache:${digest(request)}`;
+}
+
+/**
+ * Read data from database and parse them
+ */
+function read(key, callback) {
+  client.get(key, (err, result) => {
+    if (err) {
+      return callback(err);
+    }
+
+    if (!result) {
+      return callback(new Error(`Key ${key} not found`));
+    }
+
+    try {
+      let data = JSON.parse(result);
+      callback(null, data);
+    } catch (e) {
+      callback(e);
+    }
+  });
+}
+
+/**
+ * Write data to database under cacheKey
+ */
+function write(key, data, callback) {
+  client.set(key, JSON.stringify(data), 'EX', BUILD_CACHE_TIMEOUT, callback);
+}
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: [
+          {
+            loader: 'cache-loader',
+            options: {
+              cacheKey,
+              read,
+              write,
             }
           },
           'babel-loader'

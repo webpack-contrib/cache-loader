@@ -6,10 +6,19 @@ const async = require('async');
 const loaderUtils = require('loader-utils');
 const pkgVersion = require('../package.json').version;
 
-const defaultCacheDirectory = path.resolve('.cache-loader');
 const ENV = process.env.NODE_ENV || 'development';
 
+const defaults = {
+  cacheDirectory: path.resolve('.cache-loader'),
+  cacheIdentifier: `cache-loader:${pkgVersion} ${ENV}`,
+  cacheKey,
+  read,
+  write,
+};
+
 function loader(...args) {
+  const options = Object.assign({}, defaults, loaderUtils.getOptions(this));
+  const { write: writeFn } = options;
   const callback = this.async();
   const { data } = this;
   const dependencies = this.getDependencies().concat(this.loaders.map(l => l.path));
@@ -26,6 +35,7 @@ function loader(...args) {
       });
     });
   };
+
   async.parallel([
     cb => async.mapLimit(dependencies, 20, toDepDetails, cb),
     cb => async.mapLimit(contextDependencies, 20, toDepDetails, cb),
@@ -35,62 +45,32 @@ function loader(...args) {
       return;
     }
     const [deps, contextDeps] = taskResults;
-    const writeCacheFile = () => {
-      fs.writeFile(data.cacheFile, JSON.stringify({
-        remainingRequest: data.remainingRequest,
-        cacheIdentifier: data.cacheIdentifier,
-        dependencies: deps,
-        contextDependencies: contextDeps,
-        result: args,
-      }), 'utf-8', () => {
-        // ignore errors here
-        callback(null, ...args);
-      });
-    };
-    if (data.fileExists) {
-      // for performance skip creating directory
-      writeCacheFile();
-    } else {
-      mkdirp(path.dirname(data.cacheFile), (mkdirErr) => {
-        if (mkdirErr) {
-          callback(null, ...args);
-          return;
-        }
-        writeCacheFile();
-      });
-    }
+    writeFn(data.cacheKey, {
+      remainingRequest: data.remainingRequest,
+      dependencies: deps,
+      contextDependencies: contextDeps,
+      result: args,
+    }, () => {
+      // ignore errors here
+      callback(null, ...args);
+    });
   });
 }
 
 function pitch(remainingRequest, prevRequest, dataInput) {
-  const loaderOptions = loaderUtils.getOptions(this) || {};
-  const defaultOptions = {
-    cacheDirectory: defaultCacheDirectory,
-    cacheIdentifier: `cache-loader:${pkgVersion} ${ENV}`,
-  };
-  const options = Object.assign({}, defaultOptions, loaderOptions);
-  const { cacheIdentifier, cacheDirectory } = options;
-  const data = dataInput;
+  const options = Object.assign({}, defaults, loaderUtils.getOptions(this));
   const callback = this.async();
-  const hash = digest(`${cacheIdentifier}\n${remainingRequest}`);
-  const cacheFile = path.join(cacheDirectory, `${hash}.json`);
+  const { read: readFn, cacheKey: cacheKeyFn } = options;
+  const data = dataInput;
+
   data.remainingRequest = remainingRequest;
-  data.cacheIdentifier = cacheIdentifier;
-  data.cacheFile = cacheFile;
-  fs.readFile(cacheFile, 'utf-8', (readFileErr, content) => {
-    if (readFileErr) {
+  data.cacheKey = cacheKeyFn(options, remainingRequest);
+  readFn(data.cacheKey, (readErr, cacheData) => {
+    if (readErr) {
       callback();
       return;
     }
-    data.fileExists = true;
-    let cacheData;
-    try {
-      cacheData = JSON.parse(content);
-    } catch (e) {
-      callback();
-      return;
-    }
-    if (cacheData.remainingRequest !== remainingRequest || cacheData.cacheIdentifier !== cacheIdentifier) {
+    if (cacheData.remainingRequest !== remainingRequest) {
       // in case of a hash conflict
       callback();
       return;
@@ -121,6 +101,52 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 
 function digest(str) {
   return crypto.createHash('md5').update(str).digest('hex');
+}
+
+const directories = new Set();
+
+function write(key, data, callback) {
+  const dirname = path.dirname(key);
+  const content = JSON.stringify(data);
+
+  if (directories.has(dirname)) {
+    // for performance skip creating directory
+    fs.writeFile(key, content, 'utf-8', callback);
+  } else {
+    mkdirp(dirname, (mkdirErr) => {
+      if (mkdirErr) {
+        callback(mkdirErr);
+        return;
+      }
+
+      directories.add(dirname);
+
+      fs.writeFile(key, content, 'utf-8', callback);
+    });
+  }
+}
+
+function read(key, callback) {
+  fs.readFile(key, 'utf-8', (err, content) => {
+    if (err) {
+      callback(err);
+      return;
+    }
+
+    try {
+      const data = JSON.parse(content);
+      callback(null, data);
+    } catch (e) {
+      callback(e);
+    }
+  });
+}
+
+function cacheKey(options, request) {
+  const { cacheIdentifier, cacheDirectory } = options;
+  const hash = digest(`${cacheIdentifier}\n${request}`);
+
+  return path.join(cacheDirectory, `${hash}.json`);
 }
 
 export { loader as default, pitch };
