@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Errors Validation Error (Pitch) 1`] = `
+"Cache Loader (Pitch) Invalid Options
+
+options.cacheIdentifier should be string
+"
+`;
+
+exports[`Errors Validation Error 1`] = `
+"Cache Loader Invalid Options
+
+options.cacheIdentifier should be string
+"
+`;

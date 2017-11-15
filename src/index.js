@@ -1,24 +1,36 @@
+/* eslint-disable
+  import/order
+*/
 const fs = require('fs');
-const crypto = require('crypto');
 const path = require('path');
-const mkdirp = require('mkdirp');
 const async = require('async');
-const loaderUtils = require('loader-utils');
-const pkgVersion = require('../package.json').version;
+const crypto = require('crypto');
+const mkdirp = require('mkdirp');
 
-const ENV = process.env.NODE_ENV || 'development';
+const { getOptions } = require('loader-utils');
+const validateOptions = require('schema-utils');
+
+const pkg = require('../package.json');
+
+const env = process.env.NODE_ENV || 'development';
+
+const schema = require('./options.json');
 
 const defaults = {
   cacheDirectory: path.resolve('.cache-loader'),
-  cacheIdentifier: `cache-loader:${pkgVersion} ${ENV}`,
+  cacheIdentifier: `cache-loader:${pkg.version} ${env}`,
   cacheKey,
   read,
   write,
 };
 
 function loader(...args) {
-  const options = Object.assign({}, defaults, loaderUtils.getOptions(this));
+  const options = Object.assign({}, defaults, getOptions(this));
+
+  validateOptions(schema, options, 'Cache Loader');
+
   const { write: writeFn } = options;
+
   const callback = this.async();
   const { data } = this;
   const dependencies = this.getDependencies().concat(this.loaders.map(l => l.path));
@@ -76,9 +88,13 @@ function loader(...args) {
 }
 
 function pitch(remainingRequest, prevRequest, dataInput) {
-  const options = Object.assign({}, defaults, loaderUtils.getOptions(this));
-  const callback = this.async();
+  const options = Object.assign({}, defaults, getOptions(this));
+
+  validateOptions(schema, options, 'Cache Loader (Pitch)');
+
   const { read: readFn, cacheKey: cacheKeyFn } = options;
+
+  const callback = this.async();
   const data = dataInput;
 
   data.remainingRequest = remainingRequest;
