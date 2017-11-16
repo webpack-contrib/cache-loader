@@ -8,6 +8,7 @@ jobs:
   fast_finish: true
   allow_failures:
     - env: WEBPACK_VERSION=canary
+    - node_js: 9
   include:
     - &test-latest
       stage: Webpack latest
@@ -15,11 +16,11 @@ jobs:
       env: WEBPACK_VERSION=latest JOB_PART=test
       script: npm run travis:$JOB_PART
     - <<: *test-latest
-      node_js: 4.8
+      node_js: 8
       env: WEBPACK_VERSION=latest JOB_PART=test
       script: npm run travis:$JOB_PART
     - <<: *test-latest
-      node_js: 8
+      node_js: 9
       env: WEBPACK_VERSION=latest JOB_PART=lint
       script: npm run travis:$JOB_PART
     - <<: *test-latest
