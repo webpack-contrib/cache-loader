@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/webpack-contrib/cache-loader/compare/v1.1.0...v1.2.0) (2017-11-17)
+
+
+### Bug Fixes
+
+* **index:** check for inaccurate filesystem (`mtime`)  ([f24f723](https://github.com/webpack-contrib/cache-loader/commit/f24f723))
+
+
+### Features
+
+* add `options` validation (`schema-utils`) ([#24](https://github.com/webpack-contrib/cache-loader/issues/24)) ([4ac7807](https://github.com/webpack-contrib/cache-loader/commit/4ac7807))
+* add support for custom cache stores (`options.read/options.write`) ([#19](https://github.com/webpack-contrib/cache-loader/issues/19)) ([060796b](https://github.com/webpack-contrib/cache-loader/commit/060796b))
+
+
+
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/webpack-contrib/cache-loader/compare/v1.0.3...v1.1.0) (2017-10-09)
 
