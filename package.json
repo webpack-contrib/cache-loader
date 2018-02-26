@@ -1,6 +1,6 @@
 {
   "name": "cache-loader",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Caches the result of following loaders on disk.",
   "author": "Tobias Koppers @sokra",
   "license": "MIT",
@@ -15,7 +15,7 @@
     "lint": "eslint --cache src test",
     "lint-staged": "lint-staged",
     "prebuild": "npm run clean",
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "release": "standard-version",
     "security": "nsp check",
     "test": "jest",
@@ -25,7 +25,7 @@
     "travis:lint": "npm run lint && npm run security",
     "travis:test": "npm run test -- --runInBand",
     "appveyor:test": "npm run test",
-    "webpack-defaults": "webpack-defaults"
+    "defaults": "webpack-defaults"
   },
   "dependencies": {
     "async": "^2.4.1",
@@ -53,7 +53,7 @@
     "webpack-defaults": "^1.6.0"
   },
   "engines": {
-    "node": ">= 4.3 < 5.0.0 || >= 5.10"
+    "node": ">= 4.8 < 5.0.0 || >= 5.10"
   },
   "peerDependencies": {
     "webpack": "^2.0.0 || ^3.0.0 || ^4.0.0"
