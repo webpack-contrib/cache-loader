@@ -56,12 +56,11 @@
     "node": ">= 4.3 < 5.0.0 || >= 5.10"
   },
   "peerDependencies": {
-    "webpack": "^2.0.0 || ^3.0.0"
+    "webpack": "^2.0.0 || ^3.0.0 || ^4.0.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:webpack-contrib/cache-loader.git"
-  },
+  "repository": "https://github.com/webpack-contrib/cache-loader.git",
+  "bugs": "https://github.com/webpack-contrib/cache-loader/issues",
+  "homepage": "https://github.com/webpack-contrib/cache-loader",
   "pre-commit": "lint-staged",
   "lint-staged": {
     "*.js": [
