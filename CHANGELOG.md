@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.2.2"></a>
+## [1.2.2](https://github.com/webpack-contrib/cache-loader/compare/v1.2.1...v1.2.2) (2018-02-27)
+
+
+### Performance Improvements
+
+* use `neo-async` instead `async` ([#31](https://github.com/webpack-contrib/cache-loader/issues/31)) ([0851582](https://github.com/webpack-contrib/cache-loader/commit/0851582))
+
+
+
 <a name="1.2.1"></a>
 ## [1.2.1](https://github.com/webpack-contrib/cache-loader/compare/v1.2.0...v1.2.1) (2018-02-26)
 
