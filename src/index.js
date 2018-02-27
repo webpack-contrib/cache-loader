@@ -3,7 +3,7 @@
 */
 const fs = require('fs');
 const path = require('path');
-const async = require('async');
+const async = require('neo-async');
 const crypto = require('crypto');
 const mkdirp = require('mkdirp');
 
