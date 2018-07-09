@@ -6,6 +6,7 @@ const path = require('path');
 const async = require('neo-async');
 const crypto = require('crypto');
 const mkdirp = require('mkdirp');
+const pkgUp = require('pkg-up');
 
 const { getOptions } = require('loader-utils');
 const validateOptions = require('schema-utils');
@@ -19,6 +20,7 @@ const schema = require('./options.json');
 const defaults = {
   cacheDirectory: path.resolve('.cache-loader'),
   cacheIdentifier: `cache-loader:${pkg.version} ${env}`,
+  projectRoot: path.dirname(pkgUp.sync()),
   cacheKey,
   read,
   write,
@@ -29,7 +31,7 @@ function loader(...args) {
 
   validateOptions(schema, options, 'Cache Loader');
 
-  const { write: writeFn } = options;
+  const { write: writeFn, projectRoot } = options;
 
   const callback = this.async();
   const { data } = this;
@@ -75,10 +77,11 @@ function loader(...args) {
       return;
     }
     const [deps, contextDeps] = taskResults;
+
     writeFn(data.cacheKey, {
-      remainingRequest: data.remainingRequest,
-      dependencies: deps,
-      contextDependencies: contextDeps,
+      remainingRequest: removeProjectRoot(projectRoot, data.remainingRequest),
+      dependencies: removeProjectRootFromDeps(projectRoot, deps),
+      contextDependencies: removeProjectRootFromDeps(projectRoot, contextDeps),
       result: args,
     }, () => {
       // ignore errors here
@@ -87,12 +90,29 @@ function loader(...args) {
   });
 }
 
+function reapplyProjectRoot(projectRoot, content) {
+  return content.replace(/<projectRoot>/g, projectRoot);
+}
+
+function removeProjectRoot(projectRoot, content) {
+  return content.replace(new RegExp(projectRoot, 'g'), '<projectRoot>');
+}
+
+function removeProjectRootFromDeps(projectRoot, deps) {
+  return deps.map((dep) => {
+    return {
+      ...dep,
+      path: removeProjectRoot(projectRoot, dep.path),
+    };
+  });
+}
+
 function pitch(remainingRequest, prevRequest, dataInput) {
   const options = Object.assign({}, defaults, getOptions(this));
 
   validateOptions(schema, options, 'Cache Loader (Pitch)');
 
-  const { read: readFn, cacheKey: cacheKeyFn } = options;
+  const { read: readFn, cacheKey: cacheKeyFn, projectRoot } = options;
 
   const callback = this.async();
   const data = dataInput;
@@ -127,8 +147,8 @@ function pitch(remainingRequest, prevRequest, dataInput) {
         callback();
         return;
       }
-      cacheData.dependencies.forEach(dep => this.addDependency(dep.path));
-      cacheData.contextDependencies.forEach(dep => this.addContextDependency(dep.path));
+      cacheData.dependencies.forEach(dep => this.addDependency(reapplyProjectRoot(projectRoot, dep.path)));
+      cacheData.contextDependencies.forEach(dep => this.addContextDependency(reapplyProjectRoot(projectRoot, dep.path)));
       callback(null, ...cacheData.result);
     });
   });
@@ -178,9 +198,9 @@ function read(key, callback) {
 }
 
 function cacheKey(options, request) {
-  const { cacheIdentifier, cacheDirectory } = options;
-  const hash = digest(`${cacheIdentifier}\n${request}`);
-
+  const { cacheIdentifier, cacheDirectory, projectRoot } = options;
+  const newRequest = removeProjectRoot(projectRoot, request);
+  const hash = digest(`${cacheIdentifier}\n${newRequest}`);
   return path.join(cacheDirectory, `${hash}.json`);
 }
 

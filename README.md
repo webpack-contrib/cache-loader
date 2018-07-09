@@ -52,6 +52,7 @@ module.exports = {
 |**`cacheIdentifier`**|`{String}`|`cache-loader:{version} {process.env.NODE_ENV}`|Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders (used for default read/write implementation)|
 |**`write`**|`{Function(cacheKey, data, callback) -> {void}}`|`undefined`|Allows you to override default write cache data to file (e.g. Redis, memcached)|
 |**`read`**|`{Function(cacheKey, callback) -> {void}}`|`undefined`|Allows you to override default read cache data from file|
+|**`projectRoot`**|`{String}`|`path.dirname(pkgUp.sync())`|Path used to ensure cache keys/values are relative, and shareable between directories/machines.|
 
 <h2 align="center">Examples</h2>
 
