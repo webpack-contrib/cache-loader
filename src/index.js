@@ -22,6 +22,7 @@ const defaults = {
   cacheKey,
   read,
   write,
+  compare,
 };
 
 function loader(...args) {
@@ -92,7 +93,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 
   validateOptions(schema, options, 'Cache Loader (Pitch)');
 
-  const { read: readFn, cacheKey: cacheKeyFn } = options;
+  const { read: readFn, cacheKey: cacheKeyFn, compare: compareFn } = options;
 
   const callback = this.async();
   const data = dataInput;
@@ -109,19 +110,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
       callback();
       return;
     }
-    async.each(cacheData.dependencies.concat(cacheData.contextDependencies), (dep, eachCallback) => {
-      fs.stat(dep.path, (statErr, stats) => {
-        if (statErr) {
-          eachCallback(statErr);
-          return;
-        }
-        if (stats.mtime.getTime() !== dep.mtime) {
-          eachCallback(true);
-          return;
-        }
-        eachCallback();
-      });
-    }, (err) => {
+    async.each(cacheData.dependencies.concat(cacheData.contextDependencies), compareFn, (err) => {
       if (err) {
         data.startTime = Date.now();
         callback();
@@ -174,6 +163,20 @@ function read(key, callback) {
     } catch (e) {
       callback(e);
     }
+  });
+}
+
+function compare(dep, callback) {
+  fs.stat(dep.path, (statErr, stats) => {
+    if (statErr) {
+      callback(statErr);
+      return;
+    }
+    if (stats.mtime.getTime() !== dep.mtime) {
+      callback(true);
+      return;
+    }
+    callback();
   });
 }
 
