@@ -10,6 +10,9 @@
     "cacheDirectory": {
       "type": "string"
     },
+    "generate": {
+      "instanceof": "Function"
+    },
     "compare": {
       "instanceof": "Function"
     },

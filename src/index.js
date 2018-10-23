@@ -22,6 +22,7 @@ const defaults = {
   cacheKey,
   read,
   write,
+  generate,
   compare,
 };
 
@@ -30,48 +31,18 @@ function loader(...args) {
 
   validateOptions(schema, options, 'Cache Loader');
 
-  const { write: writeFn } = options;
+  const { generate: generateFn, write: writeFn } = options;
 
   const callback = this.async();
   const { data } = this;
   const dependencies = this.getDependencies().concat(this.loaders.map(l => l.path));
   const contextDependencies = this.getContextDependencies();
 
-  // Should the file get cached?
-  let cache = true;
-
-  const toDepDetails = (dep, mapCallback) => {
-    fs.stat(dep, (err, stats) => {
-      if (err) {
-        mapCallback(err);
-        return;
-      }
-
-      const mtime = stats.mtime.getTime();
-
-      if (mtime / 1000 >= Math.floor(data.startTime / 1000)) {
-        // Don't trust mtime.
-        // File was changed while compiling
-        // or it could be an inaccurate filesystem.
-        cache = false;
-      }
-
-      mapCallback(null, {
-        path: dep,
-        mtime,
-      });
-    });
-  };
-
   async.parallel([
-    cb => async.mapLimit(dependencies, 20, toDepDetails, cb),
-    cb => async.mapLimit(contextDependencies, 20, toDepDetails, cb),
+    cb => async.mapLimit(dependencies, 20, generateFn, cb),
+    cb => async.mapLimit(contextDependencies, 20, generateFn, cb),
   ], (err, taskResults) => {
     if (err) {
-      callback(null, ...args);
-      return;
-    }
-    if (!cache) {
       callback(null, ...args);
       return;
     }
@@ -166,8 +137,33 @@ function read(key, callback) {
   });
 }
 
-function compare(dep, callback) {
-  fs.stat(dep.path, (statErr, stats) => {
+function generate(depFileName, callback) {
+  fs.stat(depFileName, (err, stats) => {
+    if (err) {
+      callback(err);
+      return;
+    }
+
+    const mtime = stats.mtime.getTime();
+
+    if (mtime / 1000 >= Math.floor(data.startTime / 1000)) {
+      // Don't trust mtime.
+      // File was changed while compiling
+      // or it could be an inaccurate filesystem.
+      callback(new Error("This file cannot be trusted to be cached"));
+      return;
+    }
+
+    const data = {
+      path: dep,
+      mtime,
+    };
+    callback(null, data);
+  });
+};
+
+function compare(data, callback) {
+  fs.stat(data.path, (statErr, stats) => {
     if (statErr) {
       callback(statErr);
       return;

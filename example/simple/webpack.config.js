@@ -11,7 +11,7 @@ module.exports = {
       {
         test: /\.js$/,
         use: [
-          'cache-loader',
+          path.join(__dirname, "..", "..", "dist"),
           'babel-loader',
         ],
       },

@@ -8,8 +8,8 @@ yarn-debug.log*
 /local
 /reports
 /node_modules
-/example/.cache-loader
-/example/dist
+/example/*/.cache-loader
+/example/*/dist
 .DS_Store
 Thumbs.db
 .idea

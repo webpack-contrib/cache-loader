@@ -36,6 +36,7 @@
   "devDependencies": {
     "babel-cli": "^6.0.0",
     "babel-jest": "^21.0.0",
+    "babel-loader": "^7.0.4",
     "babel-plugin-transform-object-rest-spread": "^6.0.0",
     "babel-polyfill": "^6.0.0",
     "babel-preset-env": "^1.6.0",
@@ -48,6 +49,7 @@
     "lint-staged": "^5.0.0",
     "nsp": "^2.0.0",
     "pre-commit": "^1.0.0",
+    "react": "^16.5.2",
     "standard-version": "^4.0.0",
     "webpack": "^3.0.0",
     "webpack-defaults": "^1.6.0"
