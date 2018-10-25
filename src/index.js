@@ -40,7 +40,7 @@ function loader(...args) {
   let cache = true;
 
   const toDepDetails = (dep, mapCallback) => {
-    fs.stat(dep, (err, stats) => {
+    this.fs.stat(dep, (err, stats) => {
       if (err) {
         mapCallback(err);
         return;
@@ -110,7 +110,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
       return;
     }
     async.each(cacheData.dependencies.concat(cacheData.contextDependencies), (dep, eachCallback) => {
-      fs.stat(dep.path, (statErr, stats) => {
+      this.fs.stat(dep.path, (statErr, stats) => {
         if (statErr) {
           eachCallback(statErr);
           return;
