@@ -25,7 +25,8 @@
     "travis:lint": "npm run lint && npm run security",
     "travis:test": "npm run test -- --runInBand",
     "appveyor:test": "npm run test",
-    "defaults": "webpack-defaults"
+    "defaults": "webpack-defaults",
+    "webpack-defaults": "webpack-defaults"
   },
   "dependencies": {
     "loader-utils": "^1.1.0",
@@ -52,7 +53,7 @@
     "pre-commit": "^1.0.0",
     "react": "^16.5.2",
     "standard-version": "^4.0.0",
-    "webpack": "^3.0.0",
+    "webpack": "^4.23.1",
     "webpack-defaults": "^1.6.0"
   },
   "engines": {

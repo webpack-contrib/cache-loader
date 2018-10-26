@@ -1,45 +1,47 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test cache loader stats should write .cache-loader directory 1`] = `"~/.cache-loader/5bd0ba927047320340aa12db6cc31885.json"`;
+exports[`Test cache loader stats should write loader files correctly 1`] = `"/6006aa93cfa68769fcff22ebfaf48a84.json"`;
 
-exports[`Test cache loader stats should write .cache-loader directory 2`] = `
+exports[`Test cache loader stats should write loader files correctly 2`] = `"~/test/__fixtures__/entry_1.js"`;
+
+exports[`Test cache loader stats should write loader files correctly 3`] = `"~/src/index.js"`;
+
+exports[`Test cache loader stats should write loader files correctly 4`] = `
 Object {
   "data": Object {
     "contextDependencies": Array [],
     "dependencies": Array [
-      Object {
-        "mtime": 1540551795889,
-        "path": "~/test/__fixtures__/entry_1.js",
-      },
-      Object {
-        "mtime": 1540552501164,
-        "path": "~/src/index.js",
-      },
+      "~/test/__fixtures__/entry_1.js",
+      "~/src/index.js",
     ],
-    "remainingRequest": "~/test/__fixtures__/entry_1.js",
+    "remainingRequest": "/Users/lukesheard/dev/LukeSheard/cache-loader/test/__fixtures__/entry_1.js",
+    "result": Array [
+      "require(\\"./entry_1_import\\");",
+    ],
   },
-  "key": "~/.cache-loader/5bd0ba927047320340aa12db6cc31885.json",
+  "key": "/6006aa93cfa68769fcff22ebfaf48a84.json",
 }
 `;
 
-exports[`Test cache loader stats should write .cache-loader directory 3`] = `"~/.cache-loader/56d3e767af28dc88c1712d6bf21c90fb.json"`;
+exports[`Test cache loader stats should write loader files correctly 5`] = `"/32736685cc319b279019cc94e0554d47.json"`;
 
-exports[`Test cache loader stats should write .cache-loader directory 4`] = `
+exports[`Test cache loader stats should write loader files correctly 6`] = `"~/test/__fixtures__/entry_1_import.js"`;
+
+exports[`Test cache loader stats should write loader files correctly 7`] = `"~/src/index.js"`;
+
+exports[`Test cache loader stats should write loader files correctly 8`] = `
 Object {
   "data": Object {
     "contextDependencies": Array [],
     "dependencies": Array [
-      Object {
-        "mtime": 1540551809247,
-        "path": "~/test/__fixtures__/entry_1_import.js",
-      },
-      Object {
-        "mtime": 1540552501164,
-        "path": "~/src/index.js",
-      },
+      "~/test/__fixtures__/entry_1_import.js",
+      "~/src/index.js",
     ],
-    "remainingRequest": "~/test/__fixtures__/entry_1_import.js",
+    "remainingRequest": "/Users/lukesheard/dev/LukeSheard/cache-loader/test/__fixtures__/entry_1_import.js",
+    "result": Array [
+      "console.log(\\"I'm a sub module\\");",
+    ],
   },
-  "key": "~/.cache-loader/56d3e767af28dc88c1712d6bf21c90fb.json",
+  "key": "/32736685cc319b279019cc94e0554d47.json",
 }
 `;

@@ -8,13 +8,13 @@ import memoryfs from 'memory-fs';
  */
 const PROJECT_ROOT = path.join(__dirname, "..");
 const replaceRoot = p => path.normalize(p.replace(PROJECT_ROOT, "~"));
-const replaceDepRoot = dep => ({
-  ...dep,
-  path: replaceRoot(dep.path)
-});
+const replaceDepRoot = dep => {
+  console.log(dep);
+  return dep;
+}
 
 describe("Test cache loader stats", () => {
-  it("should write .cache-loader directory", (done) => {
+  it("should write loader files correctly", (done) => {
     const compiler = webpack({
       mode: "development",
       context: __dirname,
@@ -29,24 +29,20 @@ describe("Test cache loader stats", () => {
           use: {
             loader: path.resolve(__dirname, '../src'),
             options: {
+              cacheDirectory: "/",
               read(key, callback) {
                 expect(replaceRoot(key)).toMatchSnapshot();
                 callback(new Error("no reading is done"));
               },
-              write(key, {
-                remainingRequest,
-                dependencies,
-                contextDependencies
-              }, callback) {
-
-                const data = {
-                  remainingRequest: replaceRoot(remainingRequest),
-                  dependencies: dependencies.map(replaceDepRoot),
-                  contextDependencies: contextDependencies.map(replaceDepRoot),
-                };
+              generate(depFileName, callback) {
+                const data = replaceRoot(depFileName);
+                expect(data).toMatchSnapshot();
+                callback(null, data);
+              },
+              write(key, data, callback) {
 
                 expect({
-                  key: replaceRoot(key),
+                  key,
                   data
                 }).toMatchSnapshot();
                 callback();
