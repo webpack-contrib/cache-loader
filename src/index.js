@@ -38,9 +38,15 @@ function loader(...args) {
   const dependencies = this.getDependencies().concat(this.loaders.map(l => l.path));
   const contextDependencies = this.getContextDependencies();
 
+  const startTimeGenerator = (requestPath, callback) => generateFn(requestPath, data.startTime, callback);
+  const requestPathGenerator = (requestPath, callback) => generateFn(requestPath, callback);
+  
+  // TODO: In the next breaking release this can be backed out
+  const generatorFn = generateFn.length < 3 ? requestPathGenerator : startTimeGenerator;
+
   async.parallel([
-    cb => async.mapLimit(dependencies, 20, generateFn, cb),
-    cb => async.mapLimit(contextDependencies, 20, generateFn, cb),
+    cb => async.mapLimit(dependencies, 20, generatorFn, cb),
+    cb => async.mapLimit(contextDependencies, 20, generatorFn, cb),
   ], (err, taskResults) => {
     if (err) {
       callback(null, ...args);
@@ -137,7 +143,7 @@ function read(key, callback) {
   });
 }
 
-function generate(depFileName, callback) {
+function generate(depFileName, startTime, callback) {
   fs.stat(depFileName, (err, stats) => {
     if (err) {
       callback(err);
@@ -146,7 +152,7 @@ function generate(depFileName, callback) {
 
     const mtime = stats.mtime.getTime();
 
-    if (mtime / 1000 >= Math.floor(data.startTime / 1000)) {
+    if (mtime / 1000 >= Math.floor(startTime / 1000)) {
       // Don't trust mtime.
       // File was changed while compiling
       // or it could be an inaccurate filesystem.
@@ -155,7 +161,7 @@ function generate(depFileName, callback) {
     }
 
     const data = {
-      path: dep,
+      path: depFileName,
       mtime,
     };
     callback(null, data);
