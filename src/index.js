@@ -38,22 +38,16 @@ function loader(...args) {
   const dependencies = this.getDependencies().concat(this.loaders.map(l => l.path));
   const contextDependencies = this.getContextDependencies();
 
-  const startTimeGenerator = (requestPath, callback) => generateFn(requestPath, data.startTime, callback);
-  const requestPathGenerator = (requestPath, callback) => generateFn(requestPath, callback);
-  
-  // TODO: In the next breaking release this can be backed out
-  const generatorFn = generateFn.length < 3 ? requestPathGenerator : startTimeGenerator;
-
   async.parallel([
-    cb => async.mapLimit(dependencies, 20, generatorFn, cb),
-    cb => async.mapLimit(contextDependencies, 20, generatorFn, cb),
+    cb => async.mapLimit(dependencies, 20, generateFn, cb),
+    cb => async.mapLimit(contextDependencies, 20, generateFn, cb),
   ], (err, taskResults) => {
     if (err) {
       callback(null, ...args);
       return;
     }
     const [deps, contextDeps] = taskResults;
-    writeFn(data.cacheKey, {
+    writeFn.call(this, data.cacheKey, {
       remainingRequest: data.remainingRequest,
       dependencies: deps,
       contextDependencies: contextDeps,
@@ -77,7 +71,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 
   data.remainingRequest = remainingRequest;
   data.cacheKey = cacheKeyFn(options, remainingRequest);
-  readFn(data.cacheKey, (readErr, cacheData) => {
+  readFn.call(this, data.cacheKey, (readErr, cacheData) => {
     if (readErr) {
       callback();
       return;
@@ -128,7 +122,7 @@ function write(key, data, callback) {
 }
 
 function read(key, callback) {
-  fs.readFile(key, 'utf-8', (err, content) => {
+  this.fs.readFile(key, 'utf-8', (err, content) => {
     if (err) {
       callback(err);
       return;
@@ -144,7 +138,7 @@ function read(key, callback) {
 }
 
 function generate(depFileName, startTime, callback) {
-  fs.stat(depFileName, (err, stats) => {
+  this.fs.stat(depFileName, (err, stats) => {
     if (err) {
       callback(err);
       return;
@@ -152,7 +146,7 @@ function generate(depFileName, startTime, callback) {
 
     const mtime = stats.mtime.getTime();
 
-    if (mtime / 1000 >= Math.floor(startTime / 1000)) {
+    if (mtime / 1000 >= Math.floor(this.data.startTime / 1000)) {
       // Don't trust mtime.
       // File was changed while compiling
       // or it could be an inaccurate filesystem.
@@ -169,7 +163,7 @@ function generate(depFileName, startTime, callback) {
 };
 
 function compare(data, callback) {
-  fs.stat(data.path, (statErr, stats) => {
+  this.fs.stat(data.path, (statErr, stats) => {
     if (statErr) {
       callback(statErr);
       return;
