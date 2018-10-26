@@ -16,6 +16,7 @@ const replaceDepRoot = dep => ({
 describe("Test cache loader stats", () => {
   it("should write .cache-loader directory", (done) => {
     const compiler = webpack({
+      mode: "development",
       context: __dirname,
       entry: path.join(__dirname, "__fixtures__", "entry_1.js"),
       output: {
@@ -55,16 +56,16 @@ describe("Test cache loader stats", () => {
         }]
       }
     });
-  
+
     const fs = new memoryfs();
-  
+
     compiler.outputFileSystem = fs;
 
     compiler.run((err, stats) => {
       console.log(stats.toString());
 
       if (err || stats.hasErrors()) {
-        throw new Error("Compile failed");  
+        throw new Error("Compile failed");
       }
 
       done();
