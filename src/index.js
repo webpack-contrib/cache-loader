@@ -39,8 +39,8 @@ function loader(...args) {
   const contextDependencies = this.getContextDependencies();
 
   async.parallel([
-    cb => async.mapLimit(dependencies, 20, generateFn, cb),
-    cb => async.mapLimit(contextDependencies, 20, generateFn, cb),
+    cb => async.mapLimit(dependencies, 20, generateFn.bind(this), cb),
+    cb => async.mapLimit(contextDependencies, 20, generateFn.bind(this), cb),
   ], (err, taskResults) => {
     if (err) {
       callback(null, ...args);
@@ -137,7 +137,7 @@ function read(key, callback) {
   });
 }
 
-function generate(depFileName, startTime, callback) {
+function generate(depFileName, callback) {
   this.fs.stat(depFileName, (err, stats) => {
     if (err) {
       callback(err);
