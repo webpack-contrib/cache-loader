@@ -1,6 +1,6 @@
 {
   "name": "cache-loader",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Caches the result of following loaders on disk.",
   "author": "Tobias Koppers @sokra",
   "license": "MIT",
@@ -17,7 +17,7 @@
     "prebuild": "npm run clean",
     "prepare": "npm run build",
     "release": "standard-version",
-    "security": "nsp check",
+    "security": "npm audit",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --collectCoverageFrom='src/**/*.js' --coverage",
@@ -25,7 +25,8 @@
     "travis:lint": "npm run lint && npm run security",
     "travis:test": "npm run test -- --runInBand",
     "appveyor:test": "npm run test",
-    "defaults": "webpack-defaults"
+    "defaults": "webpack-defaults",
+    "webpack-defaults": "webpack-defaults"
   },
   "dependencies": {
     "loader-utils": "^1.1.0",
@@ -46,7 +47,6 @@
     "eslint-plugin-import": "^2.0.0",
     "jest": "^21.0.0",
     "lint-staged": "^5.0.0",
-    "nsp": "^2.0.0",
     "pre-commit": "^1.0.0",
     "standard-version": "^4.0.0",
     "webpack": "^3.0.0",
