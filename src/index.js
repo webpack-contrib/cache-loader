@@ -38,10 +38,10 @@ function loader(...args) {
 
   // Should the file get cached?
   let cache = true;
-// this.fs can be undefined 
-// e.g when using the thread-loader
-// fallback to the fs module
-const stat = this.fs ? this.fs.stat : fs.stat
+  // this.fs can be undefined 
+  // e.g when using the thread-loader
+  // fallback to the fs module
+  const stat = this.fs ? this.fs.stat : fs.stat;
   const toDepDetails = (dep, mapCallback) => {
     stat(dep, (err, stats) => {
       if (err) {
