@@ -43,7 +43,7 @@ function loader(...args) {
 // fallback to the fs module
 const stat = this.fs ? this.fs.stat : fs.stat
   const toDepDetails = (dep, mapCallback) => {
-    (this.fs || fs).stat(dep, (err, stats) => {
+    stat(dep, (err, stats) => {
       if (err) {
         mapCallback(err);
         return;
