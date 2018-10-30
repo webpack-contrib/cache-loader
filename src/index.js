@@ -112,6 +112,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
       callback();
       return;
     }
+    const stat = this.fs ? this.fs.stat : fs.stat;
     async.each(cacheData.dependencies.concat(cacheData.contextDependencies), (dep, eachCallback) => {
       stat(dep.path, (statErr, stats) => {
         if (statErr) {
