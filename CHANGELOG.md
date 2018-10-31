@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.2.3"></a>
+## [1.2.3](https://github.com/webpack-contrib/cache-loader/compare/v1.2.2...v1.2.3) (2018-10-30)
+
+
+### Performance Improvements
+
+* **index:** use the `compiler`'s cached `fs` for stats (`this.fs.stat`) ([#42](https://github.com/webpack-contrib/cache-loader/issues/42)) ([d8c630b](https://github.com/webpack-contrib/cache-loader/commit/d8c630b))
+
+
+
 <a name="1.2.2"></a>
 ## [1.2.2](https://github.com/webpack-contrib/cache-loader/compare/v1.2.1...v1.2.2) (2018-02-27)
 
