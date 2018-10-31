@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test cache loader stats should write loader files correctly 1`] = `"/6006aa93cfa68769fcff22ebfaf48a84.json"`;
+exports[`Test cache loader stats should write loader files correctly 1`] = `"1"`;
 
 exports[`Test cache loader stats should write loader files correctly 2`] = `"~/test/__fixtures__/entry_1.js"`;
 
@@ -14,16 +14,16 @@ Object {
       "~/test/__fixtures__/entry_1.js",
       "~/src/index.js",
     ],
-    "remainingRequest": "/Users/lukesheard/dev/LukeSheard/cache-loader/test/__fixtures__/entry_1.js",
+    "remainingRequest": "~/test/__fixtures__/entry_1.js",
     "result": Array [
       "require(\\"./entry_1_import\\");",
     ],
   },
-  "key": "/6006aa93cfa68769fcff22ebfaf48a84.json",
+  "key": "1",
 }
 `;
 
-exports[`Test cache loader stats should write loader files correctly 5`] = `"/32736685cc319b279019cc94e0554d47.json"`;
+exports[`Test cache loader stats should write loader files correctly 5`] = `"2"`;
 
 exports[`Test cache loader stats should write loader files correctly 6`] = `"~/test/__fixtures__/entry_1_import.js"`;
 
@@ -37,11 +37,11 @@ Object {
       "~/test/__fixtures__/entry_1_import.js",
       "~/src/index.js",
     ],
-    "remainingRequest": "/Users/lukesheard/dev/LukeSheard/cache-loader/test/__fixtures__/entry_1_import.js",
+    "remainingRequest": "~/test/__fixtures__/entry_1_import.js",
     "result": Array [
       "console.log(\\"I'm a sub module\\");",
     ],
   },
-  "key": "/32736685cc319b279019cc94e0554d47.json",
+  "key": "2",
 }
 `;
