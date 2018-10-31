@@ -16,7 +16,8 @@ Object {
     ],
     "remainingRequest": "~/test/__fixtures__/entry_1.js",
     "result": Array [
-      "require(\\"./entry_1_import\\");",
+      "require('./entry_1_import');
+",
     ],
   },
   "key": "1",
@@ -39,7 +40,8 @@ Object {
     ],
     "remainingRequest": "~/test/__fixtures__/entry_1_import.js",
     "result": Array [
-      "console.log(\\"I'm a sub module\\");",
+      "console.log(\\"I'm a sub module\\");
+",
     ],
   },
   "key": "2",
