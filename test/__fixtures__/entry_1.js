@@ -1,1 +1,1 @@
-require("./entry_1_import");
+require('./entry_1_import');

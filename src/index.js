@@ -150,7 +150,7 @@ function generate(depFileName, callback) {
       // Don't trust mtime.
       // File was changed while compiling
       // or it could be an inaccurate filesystem.
-      callback(new Error("This file cannot be trusted to be cached"));
+      callback(new Error('This file cannot be trusted to be cached'));
       return;
     }
 
@@ -160,7 +160,7 @@ function generate(depFileName, callback) {
     };
     callback(null, data);
   });
-};
+}
 
 function compare(data, callback) {
   this.fs.stat(data.path, (statErr, stats) => {
@@ -168,7 +168,7 @@ function compare(data, callback) {
       callback(statErr);
       return;
     }
-    if (stats.mtime.getTime() !== dep.mtime) {
+    if (stats.mtime.getTime() !== data.mtime) {
       callback(true);
       return;
     }

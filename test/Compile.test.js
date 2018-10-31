@@ -1,29 +1,31 @@
 import path from 'path';
 import webpack from 'webpack';
-import memoryfs from 'memory-fs';
+import MemoryFS from 'memory-fs';
 
 /**
  * Handle tests running on different FS's
  * normalize all paths in output relative to this repos root
  */
-const PROJECT_ROOT = path.join(__dirname, "..");
-const replaceRoot = p => path.normalize(p.replace(PROJECT_ROOT, "~"));
-const replaceDataRoots = data => ({
-  ...data,
-  remainingRequest: replaceRoot(data.remainingRequest)
-})
+const PROJECT_ROOT = path.join(__dirname, '..');
+const replaceRoot = p => path.normalize(p.replace(PROJECT_ROOT, '~'));
+const replaceDataRoots = (data) => {
+  return {
+    ...data,
+    remainingRequest: replaceRoot(data.remainingRequest),
+  };
+};
 
-describe("Test cache loader stats", () => {
+describe('Test cache loader stats', () => {
   let counterKey;
 
   beforeEach(() => {
-    counterKey = 1;
+    counterKey = 0;
   });
-  it("should write loader files correctly", (done) => {
+  it('should write loader files correctly', (done) => {
     const compiler = webpack({
-      mode: "development",
+      mode: 'development',
       context: __dirname,
-      entry: path.join(__dirname, "__fixtures__", "entry_1.js"),
+      entry: path.join(__dirname, '__fixtures__', 'entry_1.js'),
       output: {
         path: path.resolve(__dirname),
         filename: 'bundle.js',
@@ -34,13 +36,14 @@ describe("Test cache loader stats", () => {
           use: {
             loader: path.resolve(__dirname, '../src'),
             options: {
-              cacheDirectory: "/",
+              cacheDirectory: '/',
               cacheKey() {
-                return String(counterKey++)
+                counterKey += 1;
+                return String(counterKey);
               },
               read(key, callback) {
                 expect(replaceRoot(key)).toMatchSnapshot();
-                callback(new Error("no reading is done"));
+                callback(new Error('no reading is done'));
               },
               generate(depFileName, callback) {
                 const data = replaceRoot(depFileName);
@@ -48,20 +51,19 @@ describe("Test cache loader stats", () => {
                 callback(null, data);
               },
               write(key, data, callback) {
-
                 expect({
                   key,
-                  data: replaceDataRoots(data)
+                  data: replaceDataRoots(data),
                 }).toMatchSnapshot();
                 callback();
-              }
-            }
-          }
-        }]
-      }
+              },
+            },
+          },
+        }],
+      },
     });
 
-    const fs = new memoryfs();
+    const fs = new MemoryFS();
 
     compiler.outputFileSystem = fs;
 
@@ -69,7 +71,7 @@ describe("Test cache loader stats", () => {
       console.log(stats.toString());
 
       if (err || stats.hasErrors()) {
-        throw new Error("Compile failed");
+        throw new Error('Compile failed');
       }
 
       done();
