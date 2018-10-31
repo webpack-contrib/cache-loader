@@ -41,9 +41,9 @@ function loader(...args) {
   // this.fs can be undefined
   // e.g when using the thread-loader
   // fallback to the fs module
-  const _fs = this.fs || fs;
+  const tempFs = this.fs || fs;
   const toDepDetails = (dep, mapCallback) => {
-    _fs.stat(dep, (err, stats) => {
+    tempFs.stat(dep, (err, stats) => {
       if (err) {
         mapCallback(err);
         return;
@@ -112,9 +112,9 @@ function pitch(remainingRequest, prevRequest, dataInput) {
       callback();
       return;
     }
-    const _fs = this.fs || fs;
+    const tempFs = this.fs || fs;
     async.each(cacheData.dependencies.concat(cacheData.contextDependencies), (dep, eachCallback) => {
-      _fs.stat(dep.path, (statErr, stats) => {
+      tempFs.stat(dep.path, (statErr, stats) => {
         if (statErr) {
           eachCallback(statErr);
           return;
