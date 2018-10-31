@@ -50,8 +50,11 @@ module.exports = {
 |**`cacheKey`**|`{Function(options, request) -> {String}}`|`undefined`|Allows you to override default cache key generator|
 |**`cacheDirectory`**|`{String}`|`path.resolve('.cache-loader')`|Provide a cache directory where cache items should be stored (used for default read/write implementation)|
 |**`cacheIdentifier`**|`{String}`|`cache-loader:{version} {process.env.NODE_ENV}`|Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders (used for default read/write implementation)|
-|**`write`**|`{Function(cacheKey, data, callback) -> {void}}`|`undefined`|Allows you to override default write cache data to file (e.g. Redis, memcached)|
-|**`read`**|`{Function(cacheKey, callback) -> {void}}`|`undefined`|Allows you to override default read cache data from file|
+|**`read`**|`{Function(cacheKey, callback) -> {void}}`|`undefined`|Allows you to override default read cache data from file (pitch phase)|
+|**`compare`**|`{Function(data, callback) -> {void}}`|`undefined`|Allows you to override the comparision function for the generated data (pitch phase)|
+|**`generate`**|`{Function(depFileName, callback) -> {void}}`|`undefined`|Allows you to override the cache object generator function (loader phase)|
+|**`write`**|`{Function(cacheKey, data, callback) -> {void}}`|`undefined`|Allows you to override default write cache data to file (e.g. Redis, memcached) (loader phase)|
+
 
 <h2 align="center">Examples</h2>
 
