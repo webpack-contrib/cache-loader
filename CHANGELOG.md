@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.2.4"></a>
+## [1.2.4](https://github.com/webpack-contrib/cache-loader/compare/v1.2.3...v1.2.4) (2018-10-31)
+
+
+### Bug Fixes
+
+* **index:** fallback to `fs` if `this.fs` is `undefined` ([#45](https://github.com/webpack-contrib/cache-loader/issues/45)) ([b84d13e](https://github.com/webpack-contrib/cache-loader/commit/b84d13e))
+
+
+
 <a name="1.2.3"></a>
 ## [1.2.3](https://github.com/webpack-contrib/cache-loader/compare/v1.2.2...v1.2.3) (2018-10-30)
 
