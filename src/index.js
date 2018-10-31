@@ -81,7 +81,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
       callback();
       return;
     }
-    async.each(cacheData.dependencies.concat(cacheData.contextDependencies), compareFn, (err) => {
+    async.each(cacheData.dependencies.concat(cacheData.contextDependencies), compareFn.bind(this), (err) => {
       if (err) {
         data.startTime = Date.now();
         callback();
