@@ -24,7 +24,7 @@ Object {
 }
 `;
 
-exports[`Test cache loader stats should write loader files correctly 5`] = `"2"`;
+exports[`Test cache loader stats should write loader files correctly 5`] = `"3"`;
 
 exports[`Test cache loader stats should write loader files correctly 6`] = `"~/test/__fixtures__/entry_1_import.js"`;
 
@@ -44,6 +44,6 @@ Object {
 ",
     ],
   },
-  "key": "2",
+  "key": "3",
 }
 `;

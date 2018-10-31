@@ -8,9 +8,10 @@ import MemoryFS from 'memory-fs';
  */
 const PROJECT_ROOT = path.join(__dirname, '..');
 const replaceRoot = p => path.normalize(p.replace(PROJECT_ROOT, '~'));
-const replaceDataRoots = (data) => {
+const replaceDataRoots = (data, result) => {
   return {
     ...data,
+    result,
     remainingRequest: replaceRoot(data.remainingRequest),
   };
 };
@@ -51,9 +52,11 @@ describe('Test cache loader stats', () => {
                 callback(null, data);
               },
               write(key, data, callback) {
+                counterKey += 1;
+
                 expect({
                   key,
-                  data: replaceDataRoots(data),
+                  data: replaceDataRoots(data, data.result),
                 }).toMatchSnapshot();
                 callback();
               },
