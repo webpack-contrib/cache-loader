@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.2.5"></a>
+## [1.2.5](https://github.com/webpack-contrib/cache-loader/compare/v1.2.4...v1.2.5) (2018-10-31)
+
+
+### Bug Fixes
+
+* **index:** `this` of `stat` method is `undefined` ([#47](https://github.com/webpack-contrib/cache-loader/issues/47)) ([5c67ccd](https://github.com/webpack-contrib/cache-loader/commit/5c67ccd))
+
+
+
 <a name="1.2.4"></a>
 ## [1.2.4](https://github.com/webpack-contrib/cache-loader/compare/v1.2.3...v1.2.4) (2018-10-31)
 
