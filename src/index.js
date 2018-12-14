@@ -17,12 +17,29 @@ const env = process.env.NODE_ENV || 'development';
 const schema = require('./options.json');
 
 const defaults = {
+  cacheContext: '',
   cacheDirectory: path.resolve('.cache-loader'),
   cacheIdentifier: `cache-loader:${pkg.version} ${env}`,
   cacheKey,
   read,
   write,
 };
+
+function pathWithCacheContext(cacheContext, originalPath) {
+  if (!cacheContext) {
+    return originalPath;
+  }
+
+  if (originalPath.includes(cacheContext)) {
+    return originalPath.split('!')
+      .map(subPath => path.relative(cacheContext, subPath))
+      .join('!');
+  }
+
+  return originalPath.split('!')
+    .map(subPath => path.resolve(cacheContext, subPath))
+    .join('!');
+}
 
 function loader(...args) {
   const options = Object.assign({}, defaults, getOptions(this));
@@ -59,7 +76,7 @@ function loader(...args) {
       }
 
       mapCallback(null, {
-        path: dep,
+        path: pathWithCacheContext(options.cacheContext, dep),
         mtime,
       });
     });
@@ -95,19 +112,19 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 
   validateOptions(schema, options, 'Cache Loader (Pitch)');
 
-  const { read: readFn, cacheKey: cacheKeyFn } = options;
+  const { read: readFn, cacheContext, cacheKey: cacheKeyFn } = options;
 
   const callback = this.async();
   const data = dataInput;
 
-  data.remainingRequest = remainingRequest;
-  data.cacheKey = cacheKeyFn(options, remainingRequest);
+  data.remainingRequest = pathWithCacheContext(cacheContext, remainingRequest);
+  data.cacheKey = cacheKeyFn(options, data.remainingRequest);
   readFn(data.cacheKey, (readErr, cacheData) => {
     if (readErr) {
       callback();
       return;
     }
-    if (cacheData.remainingRequest !== remainingRequest) {
+    if (cacheData.remainingRequest !== data.remainingRequest) {
       // in case of a hash conflict
       callback();
       return;
@@ -131,8 +148,8 @@ function pitch(remainingRequest, prevRequest, dataInput) {
         callback();
         return;
       }
-      cacheData.dependencies.forEach(dep => this.addDependency(dep.path));
-      cacheData.contextDependencies.forEach(dep => this.addContextDependency(dep.path));
+      cacheData.dependencies.forEach(dep => this.addDependency(pathWithCacheContext(cacheContext, dep.path)));
+      cacheData.contextDependencies.forEach(dep => this.addContextDependency(pathWithCacheContext(cacheContext, dep.path)));
       callback(null, ...cacheData.result);
     });
   });
