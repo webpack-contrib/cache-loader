@@ -47,7 +47,7 @@ module.exports = {
 
 |Name|Type|Default|Description|
 |:--:|:--:|:-----:|:----------|
-|**`cacheContext`**|`{String}`|`undefined`|Allows you to override default cache context path. By default it will use absolute paths|
+|**`cacheContext`**|`{String}`|`undefined`|Allows you to override the default cache context in order to generate the cache relatively to a path. By default it will use absolute paths|
 |**`cacheKey`**|`{Function(options, request) -> {String}}`|`undefined`|Allows you to override default cache key generator|
 |**`cacheDirectory`**|`{String}`|`path.resolve('.cache-loader')`|Provide a cache directory where cache items should be stored (used for default read/write implementation)|
 |**`cacheIdentifier`**|`{String}`|`cache-loader:{version} {process.env.NODE_ENV}`|Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders (used for default read/write implementation)|
