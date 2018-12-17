@@ -13,10 +13,13 @@ const mockBaseWebpackConfig = {
   },
 };
 const mockRelativeWebpackConfig = {
-  ...mockBaseWebpackConfig,
   loader: {
     options: {
       cacheContext: path.resolve('.'),
+      write: (cacheKey, cacheData, callback) => {
+        mockCacheLoaderWriteFn(cacheKey, cacheData, callback);
+        callback(null, ...cacheData.result);
+      },
     },
   },
 };
@@ -53,7 +56,6 @@ describe('cacheContext option', () => {
         call.remainingRequest.includes(path.resolve('.'))
       )
     );
-    expect(cacheLoaderCallsData).toMatchSnapshot('generated cache-loader data');
     expect(stats.compilation.warnings).toMatchSnapshot('warnings');
     expect(stats.compilation.errors).toMatchSnapshot('errors');
   });

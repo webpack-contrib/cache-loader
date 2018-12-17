@@ -4,23 +4,21 @@ exports[`errors 1`] = `Array []`;
 
 exports[`errors 2`] = `Array []`;
 
-exports[`generated cache-loader data 1`] = `Array []`;
-
-exports[`generated cache-loader data 2`] = `
+exports[`generated cache-loader data 1`] = `
 Array [
   Object {
     "contextDependencies": Array [],
     "dependencies": Array [
       Object {
         "mtime": 1545063895792,
-        "path": "/Users/tiagocosta/projects/cache-loader/test/fixtures/basic/index.js",
+        "path": "test/fixtures/basic/index.js",
       },
       Object {
         "mtime": 1545067882590,
-        "path": "/Users/tiagocosta/projects/cache-loader/src/index.js",
+        "path": "src/index.js",
       },
     ],
-    "remainingRequest": "/Users/tiagocosta/projects/cache-loader/test/fixtures/basic/index.js",
+    "remainingRequest": "test/fixtures/basic/index.js",
     "result": Array [
       "/* eslint-disable */
 require('./file_1.js');
@@ -35,14 +33,14 @@ console.log('basic_entry');
     "dependencies": Array [
       Object {
         "mtime": 1545063880166,
-        "path": "/Users/tiagocosta/projects/cache-loader/test/fixtures/basic/file_1.js",
+        "path": "test/fixtures/basic/file_1.js",
       },
       Object {
         "mtime": 1545067882590,
-        "path": "/Users/tiagocosta/projects/cache-loader/src/index.js",
+        "path": "src/index.js",
       },
     ],
-    "remainingRequest": "/Users/tiagocosta/projects/cache-loader/test/fixtures/basic/file_1.js",
+    "remainingRequest": "test/fixtures/basic/file_1.js",
     "result": Array [
       "/* eslint-disable */
 console.log('file_1');
@@ -54,14 +52,14 @@ console.log('file_1');
     "dependencies": Array [
       Object {
         "mtime": 1545063880169,
-        "path": "/Users/tiagocosta/projects/cache-loader/test/fixtures/basic/file_2.js",
+        "path": "test/fixtures/basic/file_2.js",
       },
       Object {
         "mtime": 1545067882590,
-        "path": "/Users/tiagocosta/projects/cache-loader/src/index.js",
+        "path": "src/index.js",
       },
     ],
-    "remainingRequest": "/Users/tiagocosta/projects/cache-loader/test/fixtures/basic/file_2.js",
+    "remainingRequest": "test/fixtures/basic/file_2.js",
     "result": Array [
       "/* eslint-disable */
 console.log('file_2');
