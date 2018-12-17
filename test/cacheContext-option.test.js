@@ -29,12 +29,12 @@ const buildCacheLoaderCallsData = (calls) =>
     const call = rawCall[1];
     return {
       ...call,
-      dependencies: call.dependencies.map((dep) =>
-        Object.assign({}, dep, { mtime: null })
-      ),
-      contextDependencies: call.contextDependencies.map((dep) =>
-        Object.assign({}, dep, { mtime: null })
-      ),
+      dependencies: call.dependencies
+        .map((dep) => Object.assign({}, dep, { mtime: null }))
+        .sort(),
+      contextDependencies: call.contextDependencies
+        .map((dep) => Object.assign({}, dep, { mtime: null }))
+        .sort(),
     };
   });
 
