@@ -31,13 +31,15 @@ function pathWithCacheContext(cacheContext, originalPath) {
   }
 
   if (originalPath.includes(cacheContext)) {
-    return originalPath.split('!')
-      .map(subPath => path.relative(cacheContext, subPath))
+    return originalPath
+      .split('!')
+      .map((subPath) => path.relative(cacheContext, subPath))
       .join('!');
   }
 
-  return originalPath.split('!')
-    .map(subPath => path.resolve(cacheContext, subPath))
+  return originalPath
+    .split('!')
+    .map((subPath) => path.resolve(cacheContext, subPath))
     .join('!');
 }
 
@@ -50,7 +52,9 @@ function loader(...args) {
 
   const callback = this.async();
   const { data } = this;
-  const dependencies = this.getDependencies().concat(this.loaders.map(l => l.path));
+  const dependencies = this.getDependencies().concat(
+    this.loaders.map((l) => l.path)
+  );
   const contextDependencies = this.getContextDependencies();
 
   // Should the file get cached?
@@ -82,29 +86,36 @@ function loader(...args) {
     });
   };
 
-  async.parallel([
-    cb => async.mapLimit(dependencies, 20, toDepDetails, cb),
-    cb => async.mapLimit(contextDependencies, 20, toDepDetails, cb),
-  ], (err, taskResults) => {
-    if (err) {
-      callback(null, ...args);
-      return;
+  async.parallel(
+    [
+      (cb) => async.mapLimit(dependencies, 20, toDepDetails, cb),
+      (cb) => async.mapLimit(contextDependencies, 20, toDepDetails, cb),
+    ],
+    (err, taskResults) => {
+      if (err) {
+        callback(null, ...args);
+        return;
+      }
+      if (!cache) {
+        callback(null, ...args);
+        return;
+      }
+      const [deps, contextDeps] = taskResults;
+      writeFn(
+        data.cacheKey,
+        {
+          remainingRequest: data.remainingRequest,
+          dependencies: deps,
+          contextDependencies: contextDeps,
+          result: args,
+        },
+        () => {
+          // ignore errors here
+          callback(null, ...args);
+        }
+      );
     }
-    if (!cache) {
-      callback(null, ...args);
-      return;
-    }
-    const [deps, contextDeps] = taskResults;
-    writeFn(data.cacheKey, {
-      remainingRequest: data.remainingRequest,
-      dependencies: deps,
-      contextDependencies: contextDeps,
-      result: args,
-    }, () => {
-      // ignore errors here
-      callback(null, ...args);
-    });
-  });
+  );
 }
 
 function pitch(remainingRequest, prevRequest, dataInput) {
@@ -130,33 +141,46 @@ function pitch(remainingRequest, prevRequest, dataInput) {
       return;
     }
     const FS = this.fs || fs;
-    async.each(cacheData.dependencies.concat(cacheData.contextDependencies), (dep, eachCallback) => {
-      FS.stat(dep.path, (statErr, stats) => {
-        if (statErr) {
-          eachCallback(statErr);
+    async.each(
+      cacheData.dependencies.concat(cacheData.contextDependencies),
+      (dep, eachCallback) => {
+        FS.stat(dep.path, (statErr, stats) => {
+          if (statErr) {
+            eachCallback(statErr);
+            return;
+          }
+          if (stats.mtime.getTime() !== dep.mtime) {
+            eachCallback(true);
+            return;
+          }
+          eachCallback();
+        });
+      },
+      (err) => {
+        if (err) {
+          data.startTime = Date.now();
+          callback();
           return;
         }
-        if (stats.mtime.getTime() !== dep.mtime) {
-          eachCallback(true);
-          return;
-        }
-        eachCallback();
-      });
-    }, (err) => {
-      if (err) {
-        data.startTime = Date.now();
-        callback();
-        return;
+        cacheData.dependencies.forEach((dep) =>
+          this.addDependency(pathWithCacheContext(cacheContext, dep.path))
+        );
+        cacheData.contextDependencies.forEach((dep) =>
+          this.addContextDependency(
+            pathWithCacheContext(cacheContext, dep.path)
+          )
+        );
+        callback(null, ...cacheData.result);
       }
-      cacheData.dependencies.forEach(dep => this.addDependency(pathWithCacheContext(cacheContext, dep.path)));
-      cacheData.contextDependencies.forEach(dep => this.addContextDependency(pathWithCacheContext(cacheContext, dep.path)));
-      callback(null, ...cacheData.result);
-    });
+    );
   });
 }
 
 function digest(str) {
-  return crypto.createHash('md5').update(str).digest('hex');
+  return crypto
+    .createHash('md5')
+    .update(str)
+    .digest('hex');
 }
 
 const directories = new Set();

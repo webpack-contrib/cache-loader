@@ -1,0 +1,1 @@
+{"remainingRequest":"test/fixtures/basic/file_2.js","dependencies":[{"path":"test/fixtures/basic/file_2.js","mtime":1545063880169},{"path":"src/index.js","mtime":1545067882590}],"contextDependencies":[],"result":["/* eslint-disable */\nconsole.log('file_2');\n"]}
