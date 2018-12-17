@@ -24,13 +24,27 @@ const mockRelativeWebpackConfig = {
   },
 };
 
+const buildCacheLoaderCallsData = (calls) =>
+  calls.map((rawCall) => {
+    const call = rawCall[1];
+    return {
+      ...call,
+      dependencies: call.dependencies.map((dep) =>
+        Object.assign({}, dep, { mtime: null })
+      ),
+      contextDependencies: call.contextDependencies.map((dep) =>
+        Object.assign({}, dep, { mtime: null })
+      ),
+    };
+  });
+
 describe('cacheContext option', () => {
   it('should generate relative paths to the project root', async () => {
     const testId = './basic/index.js';
     const stats = await webpack(testId, mockRelativeWebpackConfig);
 
-    const cacheLoaderCallsData = mockCacheLoaderWriteFn.mock.calls.map(
-      (call) => call[1]
+    const cacheLoaderCallsData = buildCacheLoaderCallsData(
+      mockCacheLoaderWriteFn.mock.calls
     );
 
     expect(
@@ -47,8 +61,8 @@ describe('cacheContext option', () => {
     const testId = './basic/index.js';
     const stats = await webpack(testId, mockBaseWebpackConfig);
 
-    const cacheLoaderCallsData = mockCacheLoaderWriteFn.mock.calls.map(
-      (call) => call[1]
+    const cacheLoaderCallsData = buildCacheLoaderCallsData(
+      mockCacheLoaderWriteFn.mock.calls
     );
 
     expect(

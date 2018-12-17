@@ -10,11 +10,11 @@ Array [
     "contextDependencies": Array [],
     "dependencies": Array [
       Object {
-        "mtime": 1545063895792,
+        "mtime": null,
         "path": "test/fixtures/basic/index.js",
       },
       Object {
-        "mtime": 1545067882590,
+        "mtime": null,
         "path": "src/index.js",
       },
     ],
@@ -32,30 +32,11 @@ console.log('basic_entry');
     "contextDependencies": Array [],
     "dependencies": Array [
       Object {
-        "mtime": 1545063880166,
-        "path": "test/fixtures/basic/file_1.js",
-      },
-      Object {
-        "mtime": 1545067882590,
-        "path": "src/index.js",
-      },
-    ],
-    "remainingRequest": "test/fixtures/basic/file_1.js",
-    "result": Array [
-      "/* eslint-disable */
-console.log('file_1');
-",
-    ],
-  },
-  Object {
-    "contextDependencies": Array [],
-    "dependencies": Array [
-      Object {
-        "mtime": 1545063880169,
+        "mtime": null,
         "path": "test/fixtures/basic/file_2.js",
       },
       Object {
-        "mtime": 1545067882590,
+        "mtime": null,
         "path": "src/index.js",
       },
     ],
@@ -63,6 +44,25 @@ console.log('file_1');
     "result": Array [
       "/* eslint-disable */
 console.log('file_2');
+",
+    ],
+  },
+  Object {
+    "contextDependencies": Array [],
+    "dependencies": Array [
+      Object {
+        "mtime": null,
+        "path": "test/fixtures/basic/file_1.js",
+      },
+      Object {
+        "mtime": null,
+        "path": "src/index.js",
+      },
+    ],
+    "remainingRequest": "test/fixtures/basic/file_1.js",
+    "result": Array [
+      "/* eslint-disable */
+console.log('file_1');
 ",
     ],
   },
