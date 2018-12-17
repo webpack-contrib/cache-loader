@@ -11,11 +11,11 @@ Array [
     "dependencies": Array [
       Object {
         "mtime": null,
-        "path": "test/fixtures/basic/index.js",
+        "path": "src/index.js",
       },
       Object {
         "mtime": null,
-        "path": "src/index.js",
+        "path": "test/fixtures/basic/index.js",
       },
     ],
     "remainingRequest": "test/fixtures/basic/index.js",
@@ -33,11 +33,11 @@ console.log('basic_entry');
     "dependencies": Array [
       Object {
         "mtime": null,
-        "path": "test/fixtures/basic/file_2.js",
+        "path": "src/index.js",
       },
       Object {
         "mtime": null,
-        "path": "src/index.js",
+        "path": "test/fixtures/basic/file_2.js",
       },
     ],
     "remainingRequest": "test/fixtures/basic/file_2.js",
@@ -52,11 +52,11 @@ console.log('file_2');
     "dependencies": Array [
       Object {
         "mtime": null,
-        "path": "test/fixtures/basic/file_1.js",
+        "path": "src/index.js",
       },
       Object {
         "mtime": null,
-        "path": "src/index.js",
+        "path": "test/fixtures/basic/file_1.js",
       },
     ],
     "remainingRequest": "test/fixtures/basic/file_1.js",

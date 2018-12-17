@@ -24,17 +24,18 @@ const mockRelativeWebpackConfig = {
   },
 };
 
+const buildSnapshotReadyDeps = (deps) =>
+  deps
+    .map((dep) => Object.assign({}, dep, { mtime: null }))
+    .sort((a, b) => (a.path > b.path ? 1 : b.path > a.path ? -1 : 0));
+
 const buildCacheLoaderCallsData = (calls) =>
   calls.map((rawCall) => {
     const call = rawCall[1];
     return {
       ...call,
-      dependencies: call.dependencies
-        .map((dep) => Object.assign({}, dep, { mtime: null }))
-        .sort(),
-      contextDependencies: call.contextDependencies
-        .map((dep) => Object.assign({}, dep, { mtime: null }))
-        .sort(),
+      dependencies: buildSnapshotReadyDeps(call.dependencies),
+      contextDependencies: buildSnapshotReadyDeps(call.contextDependencies),
     };
   });
 
