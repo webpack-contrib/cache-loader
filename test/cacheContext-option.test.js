@@ -25,12 +25,10 @@ const mockRelativeWebpackConfig = {
 };
 
 const buildSnapshotReadyDeps = (deps) =>
-  deps
-    .map((dep) => Object.assign({}, dep, { mtime: null }))
-    .sort((a, b) => (a.path > b.path ? 1 : b.path > a.path ? -1 : 0));
+  deps.map((dep) => Object.assign({}, dep, { mtime: null })).sort();
 
 const buildCacheLoaderCallsData = (calls) =>
-  calls.map((rawCall) => {
+  calls.sort().map((rawCall) => {
     const call = rawCall[1];
     return {
       ...call,
