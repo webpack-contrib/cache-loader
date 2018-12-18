@@ -1,6 +1,9 @@
 {
   "type": "object",
   "properties": {
+    "cacheContext": {
+      "type": "string"
+    },
     "cacheKey": {
       "instanceof": "Function"
     },
