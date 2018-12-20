@@ -62,10 +62,10 @@
     "webpack-defaults": "^1.6.0"
   },
   "engines": {
-    "node": ">= 6.9.0 <7.0.0 || >= 8.9.0"
+    "node": ">= 6.9.0"
   },
   "peerDependencies": {
-    "webpack": "^2.0.0 || ^3.0.0 || ^4.0.0"
+    "webpack": "^4.0.0"
   },
   "repository": "https://github.com/webpack-contrib/cache-loader.git",
   "bugs": "https://github.com/webpack-contrib/cache-loader/issues",
