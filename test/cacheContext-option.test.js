@@ -27,23 +27,21 @@ const mockRelativeWebpackConfig = {
 
 const buildSnapshotReadyDeps = (deps) =>
   deps
+    .sort()
     .map((dep) =>
       Object.assign({}, dep, { mtime: null, path: normalizePath(dep.path) })
-    )
-    .sort();
+    );
 
 const buildCacheLoaderCallsData = (calls) =>
-  calls
-    .map((rawCall) => {
-      const [, call] = rawCall;
-      return {
-        ...call,
-        remainingRequest: normalizePath(call.remainingRequest),
-        dependencies: buildSnapshotReadyDeps(call.dependencies),
-        contextDependencies: buildSnapshotReadyDeps(call.contextDependencies),
-      };
-    })
-    .sort();
+  calls.sort().map((rawCall) => {
+    const [, call] = rawCall;
+    return {
+      ...call,
+      remainingRequest: normalizePath(call.remainingRequest),
+      dependencies: buildSnapshotReadyDeps(call.dependencies),
+      contextDependencies: buildSnapshotReadyDeps(call.contextDependencies),
+    };
+  });
 
 describe('cacheContext option', () => {
   it('should generate relative paths to the project root', async () => {
