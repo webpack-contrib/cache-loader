@@ -33,15 +33,17 @@ const buildSnapshotReadyDeps = (deps) =>
     .sort();
 
 const buildCacheLoaderCallsData = (calls) =>
-  calls.sort().map((rawCall) => {
-    const call = rawCall[1];
-    return {
-      ...call,
-      remainingRequest: normalizePath(call.remainingRequest),
-      dependencies: buildSnapshotReadyDeps(call.dependencies),
-      contextDependencies: buildSnapshotReadyDeps(call.contextDependencies),
-    };
-  });
+  calls
+    .map((rawCall) => {
+      const [, call] = rawCall;
+      return {
+        ...call,
+        remainingRequest: normalizePath(call.remainingRequest),
+        dependencies: buildSnapshotReadyDeps(call.dependencies),
+        contextDependencies: buildSnapshotReadyDeps(call.contextDependencies),
+      };
+    })
+    .sort();
 
 describe('cacheContext option', () => {
   it('should generate relative paths to the project root', async () => {
