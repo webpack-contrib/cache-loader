@@ -1,4 +1,5 @@
 const path = require('path');
+const normalizePath = require('normalize-path');
 const { webpack } = require('./helpers');
 
 const mockCacheLoaderWriteFn = jest.fn();
@@ -25,17 +26,27 @@ const mockRelativeWebpackConfig = {
 };
 
 const buildSnapshotReadyDeps = (deps) =>
-  deps.map((dep) => Object.assign({}, dep, { mtime: null })).sort();
+  deps.map((dep) =>
+    Object.assign({}, dep, { mtime: null, path: normalizePath(dep.path) })
+  );
 
 const buildCacheLoaderCallsData = (calls) =>
-  calls.sort().map((rawCall) => {
-    const call = rawCall[1];
-    return {
-      ...call,
-      dependencies: buildSnapshotReadyDeps(call.dependencies),
-      contextDependencies: buildSnapshotReadyDeps(call.contextDependencies),
-    };
-  });
+  Array.from(
+    calls
+      .reduce((builtCalls, call) => {
+        const [, rawData] = call;
+
+        return builtCalls.set(rawData.remainingRequest, {
+          ...rawData,
+          remainingRequest: normalizePath(rawData.remainingRequest),
+          dependencies: buildSnapshotReadyDeps(rawData.dependencies),
+          contextDependencies: buildSnapshotReadyDeps(
+            rawData.contextDependencies
+          ),
+        });
+      }, new Map())
+      .values()
+  );
 
 describe('cacheContext option', () => {
   it('should generate relative paths to the project root', async () => {
