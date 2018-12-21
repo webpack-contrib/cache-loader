@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/webpack-contrib/cache-loader/compare/v1.2.5...v2.0.0) (2018-12-21)
+
+
+### Chores
+
+* drop support for `webpack` < 4 ([#51](https://github.com/webpack-contrib/cache-loader/issues/51)) ([2e76d3f](https://github.com/webpack-contrib/cache-loader/commit/2e76d3f))
+* drop support for node < 6 ([#50](https://github.com/webpack-contrib/cache-loader/issues/50)) ([b8225cd](https://github.com/webpack-contrib/cache-loader/commit/b8225cd))
+
+
+### Features
+
+* add `cacheContext` option ([#49](https://github.com/webpack-contrib/cache-loader/issues/49)) ([22d0173](https://github.com/webpack-contrib/cache-loader/commit/22d0173))
+
+
+### BREAKING CHANGES
+
+* drop support for `webpack` < 4
+* drop support for node < 6
+
+
+
 <a name="1.2.5"></a>
 ## [1.2.5](https://github.com/webpack-contrib/cache-loader/compare/v1.2.4...v1.2.5) (2018-10-31)
 
