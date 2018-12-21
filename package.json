@@ -2,79 +2,107 @@
   "name": "cache-loader",
   "version": "1.2.5",
   "description": "Caches the result of following loaders on disk.",
-  "author": "Tobias Koppers @sokra",
   "license": "MIT",
+  "repository": "webpack-contrib/cache-loader",
+  "author": "Tobias Koppers @sokra",
+  "homepage": "https://github.com/webpack-contrib/cache-loader",
+  "bugs": "https://github.com/webpack-contrib/cache-loader/issues",
   "main": "dist/cjs.js",
-  "files": [
-    "dist"
-  ],
+  "engines": {
+    "node": ">= 6.9.0"
+  },
   "scripts": {
     "start": "npm run build -- -w",
     "build": "cross-env NODE_ENV=production babel src -d dist --ignore 'src/**/*.test.js' --copy-files",
     "clean": "del-cli dist",
+    "commitlint": "commitlint",
+    "commitmsg": "commitlint -e $GIT_PARAMS",
     "lint": "eslint --cache src test",
-    "lint-staged": "lint-staged",
     "prebuild": "npm run clean",
-    "prepare": "npm run build",
+    "prepublish": "npm run build",
     "release": "standard-version",
     "security": "npm audit",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --collectCoverageFrom='src/**/*.js' --coverage",
-    "travis:coverage": "npm run test:coverage -- --runInBand",
-    "travis:lint": "npm run lint && npm run security",
-    "travis:test": "npm run test -- --runInBand",
-    "appveyor:test": "npm run test",
-    "defaults": "webpack-defaults",
-    "webpack-defaults": "webpack-defaults"
+    "ci:lint": "npm run lint && npm run security",
+    "ci:test": "npm run test -- --runInBand",
+    "ci:coverage": "npm run test:coverage -- --runInBand",
+    "ci:lint:commits": "commitlint --from=origin/master --to=${CIRCLE_SHA1}",
+    "defaults": "webpack-defaults"
+  },
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "webpack": "^4.0.0"
   },
   "dependencies": {
     "loader-utils": "^1.1.0",
     "mkdirp": "^0.5.1",
     "neo-async": "^2.5.0",
-    "schema-utils": "^0.4.2"
+    "schema-utils": "^1.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/polyfill": "^7.2.3",
+    "@babel/preset-env": "^7.2.3",
+    "@commitlint/cli": "^7.2.1",
+    "@commitlint/config-conventional": "^7.1.2",
+    "@webpack-contrib/defaults": "^3.0.0",
     "@webpack-contrib/eslint-config-webpack": "^3.0.0",
-    "babel-cli": "^6.0.0",
-    "babel-core": "^6.26.3",
-    "babel-jest": "^21.0.0",
-    "babel-loader": "^7.1.5",
-    "babel-plugin-transform-object-rest-spread": "^6.0.0",
-    "babel-polyfill": "^6.0.0",
-    "babel-preset-env": "^1.6.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
+    "babel-loader": "^8.0.4",
     "cross-env": "^5.0.0",
     "del": "^3.0.0",
     "del-cli": "^1.0.0",
-    "eslint": "^4.0.0",
+    "eslint": "^5.10.0",
     "eslint-config-webpack": "^1.0.0",
     "eslint-plugin-import": "^2.0.0",
     "eslint-plugin-prettier": "^3.0.0",
-    "jest": "^21.0.0",
-    "lint-staged": "^5.0.0",
+    "husky": "^1.2.1",
+    "jest": "^23.6.0",
+    "lint-staged": "^8.1.0",
     "memory-fs": "^0.4.1",
     "normalize-path": "^3.0.0",
     "pre-commit": "^1.0.0",
     "prettier": "^1.15.2",
     "standard-version": "^4.0.0",
     "webpack": "^4.27.1",
-    "webpack-cli": "^3.1.2",
-    "webpack-defaults": "^1.6.0"
+    "webpack-cli": "^3.1.2"
   },
-  "engines": {
-    "node": ">= 6.9.0"
+  "keywords": [
+    "webpack"
+  ],
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "6.9.0"
+          },
+          "useBuiltIns": "usage"
+        }
+      ]
+    ]
   },
-  "peerDependencies": {
-    "webpack": "^4.0.0"
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
-  "repository": "https://github.com/webpack-contrib/cache-loader.git",
-  "bugs": "https://github.com/webpack-contrib/cache-loader/issues",
-  "homepage": "https://github.com/webpack-contrib/cache-loader",
-  "pre-commit": "lint-staged",
   "lint-staged": {
     "*.js": [
       "eslint --fix",
       "git add"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
     ]
   }
 }
