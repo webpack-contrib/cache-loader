@@ -1,5 +1,7 @@
 const path = require('path');
 
+const normalizePath = require('normalize-path');
+
 const { webpack } = require('./helpers');
 
 const mockCacheLoaderWriteFn = jest.fn();
@@ -77,7 +79,22 @@ describe('cacheContext option', () => {
     expect(stats.compilation.errors).toMatchSnapshot('errors');
   });
 
-  it('should generate absolute paths to the project root 2', async () => {
+  it('should generate normalized relative paths to the project root', async () => {
+    const testId = './basic/index.js';
+    await webpack(testId, mockRelativeWebpackConfig);
+
+    const cacheLoaderCallsData = buildCacheLoaderCallsData(
+      mockCacheLoaderWriteFn.mock.calls
+    ).sort(sortData);
+
+    expect(
+      cacheLoaderCallsData.every(
+        (call) => call.remainingRequest === normalizePath(call.remainingRequest)
+      )
+    );
+  });
+
+  it('should generate absolute paths to the project root', async () => {
     const testId = './basic/index.js';
     const stats = await webpack(testId, mockBaseWebpackConfig);
 
