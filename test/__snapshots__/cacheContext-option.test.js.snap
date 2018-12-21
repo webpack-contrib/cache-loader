@@ -11,6 +11,28 @@ Array [
     "dependencies": Array [
       Object {
         "mtime": null,
+        "path": "test/fixtures/basic/index.js",
+      },
+      Object {
+        "mtime": null,
+        "path": "src/index.js",
+      },
+    ],
+    "remainingRequest": "test/fixtures/basic/index.js",
+    "result": Array [
+      "/* eslint-disable */
+require('./file_1.js');
+require('./file_2.js');
+
+console.log('basic_entry');
+",
+    ],
+  },
+  Object {
+    "contextDependencies": Array [],
+    "dependencies": Array [
+      Object {
+        "mtime": null,
         "path": "test/fixtures/basic/file_1.js",
       },
       Object {
@@ -41,28 +63,6 @@ console.log('file_1');
     "result": Array [
       "/* eslint-disable */
 console.log('file_2');
-",
-    ],
-  },
-  Object {
-    "contextDependencies": Array [],
-    "dependencies": Array [
-      Object {
-        "mtime": null,
-        "path": "test/fixtures/basic/index.js",
-      },
-      Object {
-        "mtime": null,
-        "path": "src/index.js",
-      },
-    ],
-    "remainingRequest": "test/fixtures/basic/index.js",
-    "result": Array [
-      "/* eslint-disable */
-require('./file_1.js');
-require('./file_2.js');
-
-console.log('basic_entry');
 ",
     ],
   },
