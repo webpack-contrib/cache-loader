@@ -1,5 +1,5 @@
 const path = require('path');
-const normalizePath = require('normalize-path');
+
 const { webpack } = require('./helpers');
 
 const mockCacheLoaderWriteFn = jest.fn();
@@ -26,9 +26,7 @@ const mockRelativeWebpackConfig = {
 };
 
 const buildSnapshotReadyDeps = (deps) =>
-  deps.map((dep) =>
-    Object.assign({}, dep, { mtime: null, path: normalizePath(dep.path) })
-  );
+  deps.map((dep) => Object.assign({}, dep, { mtime: null, path: dep.path }));
 
 const buildCacheLoaderCallsData = (calls) =>
   Array.from(
@@ -38,7 +36,7 @@ const buildCacheLoaderCallsData = (calls) =>
 
         return builtCalls.set(rawData.remainingRequest, {
           ...rawData,
-          remainingRequest: normalizePath(rawData.remainingRequest),
+          remainingRequest: rawData.remainingRequest,
           dependencies: buildSnapshotReadyDeps(rawData.dependencies),
           contextDependencies: buildSnapshotReadyDeps(
             rawData.contextDependencies
