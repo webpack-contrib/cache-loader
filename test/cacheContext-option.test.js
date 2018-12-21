@@ -48,6 +48,18 @@ const buildCacheLoaderCallsData = (calls) =>
       .values()
   );
 
+const sortData = (a, b) => {
+  if (a.remainingRequest < b.remainingRequest) {
+    return -1;
+  }
+
+  if (a.remainingRequest > b.remainingRequest) {
+    return 1;
+  }
+
+  return 0;
+};
+
 describe('cacheContext option', () => {
   it('should generate relative paths to the project root', async () => {
     const testId = './basic/index.js';
@@ -55,7 +67,7 @@ describe('cacheContext option', () => {
 
     const cacheLoaderCallsData = buildCacheLoaderCallsData(
       mockCacheLoaderWriteFn.mock.calls
-    );
+    ).sort(sortData);
 
     expect(
       cacheLoaderCallsData.every(
@@ -67,13 +79,13 @@ describe('cacheContext option', () => {
     expect(stats.compilation.errors).toMatchSnapshot('errors');
   });
 
-  it('should generate absolute paths to the project root', async () => {
+  it('should generate absolute paths to the project root 2', async () => {
     const testId = './basic/index.js';
     const stats = await webpack(testId, mockBaseWebpackConfig);
 
     const cacheLoaderCallsData = buildCacheLoaderCallsData(
       mockCacheLoaderWriteFn.mock.calls
-    );
+    ).sort(sortData);
 
     expect(
       cacheLoaderCallsData.every((call) =>
