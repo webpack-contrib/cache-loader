@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`cacheContext option should generate absolute paths to the project root 2: errors 1`] = `Array []`;
+exports[`cacheContext option should generate absolute paths to the project root: errors 1`] = `Array []`;
 
-exports[`cacheContext option should generate absolute paths to the project root 2: warnings 1`] = `Array []`;
+exports[`cacheContext option should generate absolute paths to the project root: warnings 1`] = `Array []`;
 
 exports[`cacheContext option should generate relative paths to the project root: errors 1`] = `Array []`;
 
