@@ -1,6 +1,6 @@
 {
   "name": "cache-loader",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Caches the result of following loaders on disk.",
   "license": "MIT",
   "repository": "webpack-contrib/cache-loader",
