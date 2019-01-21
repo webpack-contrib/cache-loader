@@ -23,6 +23,7 @@ const defaults = {
   cacheIdentifier: `cache-loader:${pkg.version} ${env}`,
   cacheKey,
   read,
+  readOnly: false,
   write,
 };
 

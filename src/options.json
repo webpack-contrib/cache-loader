@@ -16,11 +16,11 @@
     "read": {
       "instanceof": "Function"
     },
-    "write": {
-      "instanceof": "Function"
-    },
     "readOnly": {
       "type": "boolean"
+    },
+    "write": {
+      "instanceof": "Function"
     }
   },
   "additionalProperties": false
