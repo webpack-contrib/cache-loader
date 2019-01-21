@@ -18,6 +18,9 @@
     },
     "write": {
       "instanceof": "Function"
+    },
+    "readOnly": {
+      "type": "boolean"
     }
   },
   "additionalProperties": false
