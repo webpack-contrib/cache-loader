@@ -51,6 +51,8 @@ function loader(...args) {
 
   const { readOnly, write: writeFn } = options;
 
+  // In case we are under a readOnly mode on cache-loader
+  // we don't want to write or update any cache file
   if (readOnly) {
     this.callback(null, ...args);
     return;
