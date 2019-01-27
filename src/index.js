@@ -47,10 +47,14 @@ function pathWithCacheContext(cacheContext, originalPath) {
 
 function loader(...args) {
   const options = Object.assign({}, defaults, getOptions(this));
-
   validateOptions(schema, options, 'Cache Loader');
 
-  const { write: writeFn } = options;
+  const { readOnly, write: writeFn } = options;
+
+  if (readOnly) {
+    this.callback(null, ...args);
+    return;
+  }
 
   const callback = this.async();
   const { data } = this;
@@ -125,7 +129,12 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 
   validateOptions(schema, options, 'Cache Loader (Pitch)');
 
-  const { read: readFn, cacheContext, cacheKey: cacheKeyFn } = options;
+  const {
+    read: readFn,
+    readOnly,
+    cacheContext,
+    cacheKey: cacheKeyFn,
+  } = options;
 
   const callback = this.async();
   const data = dataInput;
@@ -149,6 +158,10 @@ function pitch(remainingRequest, prevRequest, dataInput) {
         FS.stat(dep.path, (statErr, stats) => {
           if (statErr) {
             eachCallback(statErr);
+            return;
+          }
+          if (readOnly) {
+            eachCallback();
             return;
           }
           if (stats.mtime.getTime() !== dep.mtime) {
