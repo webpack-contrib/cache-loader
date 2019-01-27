@@ -162,10 +162,15 @@ function pitch(remainingRequest, prevRequest, dataInput) {
             eachCallback(statErr);
             return;
           }
+
+          // When we are under a readOnly config on cache-loader
+          // we don't want to emit any other error than a
+          // file stat error
           if (readOnly) {
             eachCallback();
             return;
           }
+
           if (stats.mtime.getTime() !== dep.mtime) {
             eachCallback(true);
             return;
