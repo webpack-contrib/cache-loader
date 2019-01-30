@@ -23,6 +23,7 @@ const defaults = {
   cacheIdentifier: `cache-loader:${pkg.version} ${env}`,
   cacheKey,
   read,
+  readOnly: false,
   write,
 };
 
@@ -46,10 +47,16 @@ function pathWithCacheContext(cacheContext, originalPath) {
 
 function loader(...args) {
   const options = Object.assign({}, defaults, getOptions(this));
-
   validateOptions(schema, options, 'Cache Loader');
 
-  const { write: writeFn } = options;
+  const { readOnly, write: writeFn } = options;
+
+  // In case we are under a readOnly mode on cache-loader
+  // we don't want to write or update any cache file
+  if (readOnly) {
+    this.callback(null, ...args);
+    return;
+  }
 
   const callback = this.async();
   const { data } = this;
@@ -124,7 +131,12 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 
   validateOptions(schema, options, 'Cache Loader (Pitch)');
 
-  const { read: readFn, cacheContext, cacheKey: cacheKeyFn } = options;
+  const {
+    read: readFn,
+    readOnly,
+    cacheContext,
+    cacheKey: cacheKeyFn,
+  } = options;
 
   const callback = this.async();
   const data = dataInput;
@@ -150,6 +162,15 @@ function pitch(remainingRequest, prevRequest, dataInput) {
             eachCallback(statErr);
             return;
           }
+
+          // When we are under a readOnly config on cache-loader
+          // we don't want to emit any other error than a
+          // file stat error
+          if (readOnly) {
+            eachCallback();
+            return;
+          }
+
           if (stats.mtime.getTime() !== dep.mtime) {
             eachCallback(true);
             return;
