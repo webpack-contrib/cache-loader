@@ -19,7 +19,7 @@ const schema = require('./options.json');
 
 const defaults = {
   cacheContext: '',
-  cacheDirectory: path.resolve('./node_modules/.cache/.cache-loader'),
+  cacheDirectory: path.resolve('.cache-loader'),
   cacheIdentifier: `cache-loader:${pkg.version} ${env}`,
   cacheKey,
   read,
