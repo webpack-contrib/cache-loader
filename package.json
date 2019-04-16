@@ -38,6 +38,7 @@
     "webpack": "^4.0.0"
   },
   "dependencies": {
+    "find-cache-dir": "^2.1.0",
     "loader-utils": "^1.1.0",
     "mkdirp": "^0.5.1",
     "neo-async": "^2.6.0",
