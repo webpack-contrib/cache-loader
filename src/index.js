@@ -2,11 +2,13 @@
   import/order
 */
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const normalizePath = require('normalize-path');
 const async = require('neo-async');
 const crypto = require('crypto');
 const mkdirp = require('mkdirp');
+const findCacheDir = require('find-cache-dir');
 
 const { getOptions } = require('loader-utils');
 const validateOptions = require('schema-utils');
@@ -19,7 +21,7 @@ const schema = require('./options.json');
 
 const defaults = {
   cacheContext: '',
-  cacheDirectory: path.resolve('.cache-loader'),
+  cacheDirectory: findCacheDir({ name: 'cache-loader' }) || os.tmpdir(),
   cacheIdentifier: `cache-loader:${pkg.version} ${env}`,
   cacheKey,
   read,
