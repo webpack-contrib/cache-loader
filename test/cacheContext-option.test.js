@@ -73,7 +73,7 @@ describe('cacheContext option', () => {
       cacheLoaderCallsData.every(
         (call) => !call.remainingRequest.includes(path.resolve('.'))
       )
-    );
+    ).toBeTruthy();
     expect(cacheLoaderCallsData).toMatchSnapshot('generated cache-loader data');
     expect(stats.compilation.warnings).toMatchSnapshot('warnings');
     expect(stats.compilation.errors).toMatchSnapshot('errors');
@@ -91,7 +91,7 @@ describe('cacheContext option', () => {
       cacheLoaderCallsData.every(
         (call) => call.remainingRequest === normalizePath(call.remainingRequest)
       )
-    );
+    ).toBeTruthy();
   });
 
   it('should generate absolute paths to the project root', async () => {
@@ -106,6 +106,21 @@ describe('cacheContext option', () => {
       cacheLoaderCallsData.every((call) =>
         call.remainingRequest.includes(path.resolve('.'))
       )
+    ).toBeFalsy();
+    expect(stats.compilation.warnings).toMatchSnapshot('warnings');
+    expect(stats.compilation.errors).toMatchSnapshot('errors');
+  });
+
+  it('should load as a raw loader to support images', async () => {
+    const testId = './img/index.js';
+    const stats = await webpack(testId, mockBaseWebpackConfig);
+
+    const cacheLoaderCallsData = buildCacheLoaderCallsData(
+      mockCacheLoaderWriteFn.mock.calls
+    ).sort(sortData);
+
+    expect(
+      cacheLoaderCallsData.every((call) => Buffer.isBuffer(call.result[0]))
     );
     expect(stats.compilation.warnings).toMatchSnapshot('warnings');
     expect(stats.compilation.errors).toMatchSnapshot('errors');

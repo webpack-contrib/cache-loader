@@ -253,4 +253,5 @@ function cacheKey(options, request) {
   return path.join(cacheDirectory, `${hash}.json`);
 }
 
+export const raw = true;
 export { loader as default, pitch };
