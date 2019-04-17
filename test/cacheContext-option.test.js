@@ -27,6 +27,18 @@ const mockRelativeWebpackConfig = {
   },
 };
 
+const sortData = (a, b) => {
+  if (a.remainingRequest < b.remainingRequest) {
+    return -1;
+  }
+
+  if (a.remainingRequest > b.remainingRequest) {
+    return 1;
+  }
+
+  return 0;
+};
+
 const buildSnapshotReadyDeps = (deps) =>
   deps.map((dep) => Object.assign({}, dep, { mtime: null, path: dep.path }));
 
@@ -46,19 +58,7 @@ const buildCacheLoaderCallsData = (calls) =>
         });
       }, new Map())
       .values()
-  );
-
-const sortData = (a, b) => {
-  if (a.remainingRequest < b.remainingRequest) {
-    return -1;
-  }
-
-  if (a.remainingRequest > b.remainingRequest) {
-    return 1;
-  }
-
-  return 0;
-};
+  ).sort(sortData);
 
 describe('cacheContext option', () => {
   it('should generate relative paths to the project root', async () => {
@@ -67,7 +67,7 @@ describe('cacheContext option', () => {
 
     const cacheLoaderCallsData = buildCacheLoaderCallsData(
       mockCacheLoaderWriteFn.mock.calls
-    ).sort(sortData);
+    );
 
     expect(
       cacheLoaderCallsData.every(
@@ -85,7 +85,7 @@ describe('cacheContext option', () => {
 
     const cacheLoaderCallsData = buildCacheLoaderCallsData(
       mockCacheLoaderWriteFn.mock.calls
-    ).sort(sortData);
+    );
 
     expect(
       cacheLoaderCallsData.every(
@@ -100,7 +100,7 @@ describe('cacheContext option', () => {
 
     const cacheLoaderCallsData = buildCacheLoaderCallsData(
       mockCacheLoaderWriteFn.mock.calls
-    ).sort(sortData);
+    );
 
     expect(
       cacheLoaderCallsData.every((call) =>
@@ -117,7 +117,7 @@ describe('cacheContext option', () => {
 
     const cacheLoaderCallsData = buildCacheLoaderCallsData(
       mockCacheLoaderWriteFn.mock.calls
-    ).sort(sortData);
+    );
 
     expect(
       cacheLoaderCallsData.every((call) => Buffer.isBuffer(call.result[0]))
