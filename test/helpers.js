@@ -34,10 +34,7 @@ const moduleConfig = (config) => {
                 loader: path.resolve(__dirname, '../src/index.js'),
                 options: (config.loader && config.loader.options) || {},
               },
-              {
-                loader: 'file-loader',
-                options: {},
-              },
+              'file-loader',
             ],
           },
         ],
