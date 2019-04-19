@@ -1,6 +1,7 @@
 const path = require('path');
 
 const normalizePath = require('normalize-path');
+const BJSON = require('buffer-json');
 
 const { webpack } = require('./helpers');
 
@@ -74,7 +75,9 @@ describe('cacheContext option', () => {
         (call) => !call.remainingRequest.includes(path.resolve('.'))
       )
     ).toBeTruthy();
-    expect(cacheLoaderCallsData).toMatchSnapshot('generated cache-loader data');
+    expect(BJSON.stringify(cacheLoaderCallsData, 2)).toMatchSnapshot(
+      'generated cache-loader data'
+    );
     expect(stats.compilation.warnings).toMatchSnapshot('warnings');
     expect(stats.compilation.errors).toMatchSnapshot('errors');
   });
