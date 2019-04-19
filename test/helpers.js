@@ -1,4 +1,5 @@
 const path = require('path');
+
 const del = require('del');
 const webpack = require('webpack');
 const MemoryFS = require('memory-fs');
@@ -25,6 +26,16 @@ const moduleConfig = (config) => {
                   ]
                 : []
             ),
+          },
+          {
+            test: /\.png$/,
+            use: [
+              {
+                loader: path.resolve(__dirname, '../src/index.js'),
+                options: (config.loader && config.loader.options) || {},
+              },
+              'file-loader',
+            ],
           },
         ],
   };
