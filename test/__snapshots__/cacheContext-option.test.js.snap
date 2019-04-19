@@ -7,257 +7,68 @@ exports[`cacheContext option should generate absolute paths to the project root:
 exports[`cacheContext option should generate relative paths to the project root: errors 1`] = `Array []`;
 
 exports[`cacheContext option should generate relative paths to the project root: generated cache-loader data 1`] = `
-Array [
-  Object {
-    "contextDependencies": Array [],
-    "dependencies": Array [
-      Object {
-        "mtime": null,
-        "path": "test/fixtures/basic/file_1.js",
+"[
+  {
+    \\"remainingRequest\\": \\"test/fixtures/basic/file_1.js\\",
+    \\"dependencies\\": [
+      {
+        \\"path\\": \\"test/fixtures/basic/file_1.js\\",
+        \\"mtime\\": null
       },
-      Object {
-        "mtime": null,
-        "path": "src/index.js",
-      },
+      {
+        \\"path\\": \\"src/index.js\\",
+        \\"mtime\\": null
+      }
     ],
-    "remainingRequest": "test/fixtures/basic/file_1.js",
-    "result": Array [
-      Object {
-        "data": Array [
-          47,
-          42,
-          32,
-          101,
-          115,
-          108,
-          105,
-          110,
-          116,
-          45,
-          100,
-          105,
-          115,
-          97,
-          98,
-          108,
-          101,
-          32,
-          42,
-          47,
-          10,
-          99,
-          111,
-          110,
-          115,
-          111,
-          108,
-          101,
-          46,
-          108,
-          111,
-          103,
-          40,
-          39,
-          102,
-          105,
-          108,
-          101,
-          95,
-          49,
-          39,
-          41,
-          59,
-          10,
-        ],
-        "type": "Buffer",
-      },
-    ],
+    \\"contextDependencies\\": [],
+    \\"result\\": [
+      {
+        \\"type\\": \\"Buffer\\",
+        \\"data\\": \\"base64:LyogZXNsaW50LWRpc2FibGUgKi8KY29uc29sZS5sb2coJ2ZpbGVfMScpOwo=\\"
+      }
+    ]
   },
-  Object {
-    "contextDependencies": Array [],
-    "dependencies": Array [
-      Object {
-        "mtime": null,
-        "path": "test/fixtures/basic/file_2.js",
+  {
+    \\"remainingRequest\\": \\"test/fixtures/basic/file_2.js\\",
+    \\"dependencies\\": [
+      {
+        \\"path\\": \\"test/fixtures/basic/file_2.js\\",
+        \\"mtime\\": null
       },
-      Object {
-        "mtime": null,
-        "path": "src/index.js",
-      },
+      {
+        \\"path\\": \\"src/index.js\\",
+        \\"mtime\\": null
+      }
     ],
-    "remainingRequest": "test/fixtures/basic/file_2.js",
-    "result": Array [
-      Object {
-        "data": Array [
-          47,
-          42,
-          32,
-          101,
-          115,
-          108,
-          105,
-          110,
-          116,
-          45,
-          100,
-          105,
-          115,
-          97,
-          98,
-          108,
-          101,
-          32,
-          42,
-          47,
-          10,
-          99,
-          111,
-          110,
-          115,
-          111,
-          108,
-          101,
-          46,
-          108,
-          111,
-          103,
-          40,
-          39,
-          102,
-          105,
-          108,
-          101,
-          95,
-          50,
-          39,
-          41,
-          59,
-          10,
-        ],
-        "type": "Buffer",
-      },
-    ],
+    \\"contextDependencies\\": [],
+    \\"result\\": [
+      {
+        \\"type\\": \\"Buffer\\",
+        \\"data\\": \\"base64:LyogZXNsaW50LWRpc2FibGUgKi8KY29uc29sZS5sb2coJ2ZpbGVfMicpOwo=\\"
+      }
+    ]
   },
-  Object {
-    "contextDependencies": Array [],
-    "dependencies": Array [
-      Object {
-        "mtime": null,
-        "path": "test/fixtures/basic/index.js",
+  {
+    \\"remainingRequest\\": \\"test/fixtures/basic/index.js\\",
+    \\"dependencies\\": [
+      {
+        \\"path\\": \\"test/fixtures/basic/index.js\\",
+        \\"mtime\\": null
       },
-      Object {
-        "mtime": null,
-        "path": "src/index.js",
-      },
+      {
+        \\"path\\": \\"src/index.js\\",
+        \\"mtime\\": null
+      }
     ],
-    "remainingRequest": "test/fixtures/basic/index.js",
-    "result": Array [
-      Object {
-        "data": Array [
-          47,
-          42,
-          32,
-          101,
-          115,
-          108,
-          105,
-          110,
-          116,
-          45,
-          100,
-          105,
-          115,
-          97,
-          98,
-          108,
-          101,
-          32,
-          42,
-          47,
-          10,
-          114,
-          101,
-          113,
-          117,
-          105,
-          114,
-          101,
-          40,
-          39,
-          46,
-          47,
-          102,
-          105,
-          108,
-          101,
-          95,
-          49,
-          46,
-          106,
-          115,
-          39,
-          41,
-          59,
-          10,
-          114,
-          101,
-          113,
-          117,
-          105,
-          114,
-          101,
-          40,
-          39,
-          46,
-          47,
-          102,
-          105,
-          108,
-          101,
-          95,
-          50,
-          46,
-          106,
-          115,
-          39,
-          41,
-          59,
-          10,
-          10,
-          99,
-          111,
-          110,
-          115,
-          111,
-          108,
-          101,
-          46,
-          108,
-          111,
-          103,
-          40,
-          39,
-          98,
-          97,
-          115,
-          105,
-          99,
-          95,
-          101,
-          110,
-          116,
-          114,
-          121,
-          39,
-          41,
-          59,
-          10,
-        ],
-        "type": "Buffer",
-      },
-    ],
-  },
-]
+    \\"contextDependencies\\": [],
+    \\"result\\": [
+      {
+        \\"type\\": \\"Buffer\\",
+        \\"data\\": \\"base64:LyogZXNsaW50LWRpc2FibGUgKi8KcmVxdWlyZSgnLi9maWxlXzEuanMnKTsKcmVxdWlyZSgnLi9maWxlXzIuanMnKTsKCmNvbnNvbGUubG9nKCdiYXNpY19lbnRyeScpOwo=\\"
+      }
+    ]
+  }
+]"
 `;
 
 exports[`cacheContext option should generate relative paths to the project root: warnings 1`] = `Array []`;
