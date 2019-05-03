@@ -28,6 +28,7 @@ const defaults = {
   readOnly: false,
   write,
   compare,
+  precision: 0,
 };
 
 function pathWithCacheContext(cacheContext, originalPath) {
@@ -46,6 +47,10 @@ function pathWithCacheContext(cacheContext, originalPath) {
     .split('!')
     .map((subPath) => path.resolve(cacheContext, subPath))
     .join('!');
+}
+
+function roundMs(mtime, precision) {
+  return Math.floor(mtime / precision) * precision;
 }
 
 function loader(...args) {
@@ -140,6 +145,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
     cacheContext,
     cacheKey: cacheKeyFn,
     compare: compareFn,
+    precision,
   } = options;
 
   const callback = this.async();
@@ -175,8 +181,20 @@ function pitch(remainingRequest, prevRequest, dataInput) {
             return;
           }
 
+          if (precision > 1) {
+            ['atime', 'mtime', 'ctime', 'birthtime'].forEach((key) => {
+              const msKey = `${key}Ms`;
+              const ms = roundMs(stats[msKey], precision);
+
+              stats[msKey] = ms;
+              stats[key] = new Date(ms);
+            });
+
+            dep.mtime = roundMs(dep.mtime, precision);
+          }
+
           // If the compare function returns false
-          // we not read from cache
+          // we do not read from cache
           if (compareFn(stats, dep) !== true) {
             eachCallback(true);
             return;

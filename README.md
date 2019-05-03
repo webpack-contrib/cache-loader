@@ -56,6 +56,7 @@ module.exports = {
 |      **`read`**       |    `{Function(cacheKey, callback) -> {void}}`    |                       `undefined`                       | Allows you to override default read cache data from file                                                                                                               |
 |      **`compare`**    |    `{Function(stats, dep) -> {Boolean}}`         |                       `undefined`                       | Allows you to override default comparison function between the cached dependency and the one is being read. Return `true` to use the cached resource.                                                                                                    |
 |    **`readOnly`**     |                   `{Boolean}`                    |                         `false`                         | Allows you to override default value and make the cache read only (useful for some environments where you don't want the cache to be updated, only read from it)       |
+|    **`precision`**    |                   `{Number}`                     |                         `0`                             | Round `mtime` by this number of milliseconds before comparing         |
 
 ## Examples
 
