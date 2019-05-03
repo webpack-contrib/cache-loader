@@ -21,6 +21,9 @@
     },
     "write": {
       "instanceof": "Function"
+    },
+    "precision": {
+      "type": "number"
     }
   },
   "additionalProperties": false

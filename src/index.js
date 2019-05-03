@@ -28,6 +28,7 @@ const defaults = {
   read,
   readOnly: false,
   write,
+  precision: 0,
 };
 
 function pathWithCacheContext(cacheContext, originalPath) {
@@ -46,6 +47,10 @@ function pathWithCacheContext(cacheContext, originalPath) {
     .split('!')
     .map((subPath) => normalizePath(path.resolve(cacheContext, subPath)))
     .join('!');
+}
+
+function roundMs(mtime, precision) {
+  return Math.floor(mtime / precision) * precision;
 }
 
 function loader(...args) {
@@ -139,6 +144,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
     readOnly,
     cacheContext,
     cacheKey: cacheKeyFn,
+    precision,
   } = options;
 
   const callback = this.async();
@@ -172,6 +178,18 @@ function pitch(remainingRequest, prevRequest, dataInput) {
           if (readOnly) {
             eachCallback();
             return;
+          }
+
+          if (precision > 1) {
+            ['atime', 'mtime', 'ctime', 'birthtime'].forEach((key) => {
+              const msKey = `${key}Ms`;
+              const ms = roundMs(stats[msKey], precision);
+
+              stats[msKey] = ms;
+              stats[key] = new Date(ms);
+            });
+
+            dep.mtime = roundMs(dep.mtime, precision);
           }
 
           if (stats.mtime.getTime() !== dep.mtime) {
