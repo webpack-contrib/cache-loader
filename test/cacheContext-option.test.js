@@ -40,12 +40,15 @@ const sortData = (a, b) => {
   return 0;
 };
 
-const buildSnapshotReadyDeps = (deps) =>
+const buildSnapshotReadyDeps = (deps, normalizePaths = true) =>
   deps.map((dep) =>
-    Object.assign({}, dep, { mtime: null, path: normalizePath(dep.path) })
+    Object.assign({}, dep, {
+      mtime: null,
+      path: normalizePaths ? normalizePath(dep.path) : dep.path,
+    })
   );
 
-const buildCacheLoaderCallsData = (calls) =>
+const buildCacheLoaderCallsData = (calls, normalizePaths = true) =>
   Array.from(
     calls
       .reduce((builtCalls, call) => {
@@ -53,10 +56,13 @@ const buildCacheLoaderCallsData = (calls) =>
 
         return builtCalls.set(rawData.remainingRequest, {
           ...rawData,
-          remainingRequest: normalizePath(rawData.remainingRequest),
-          dependencies: buildSnapshotReadyDeps(rawData.dependencies),
+          remainingRequest: normalizePaths
+            ? normalizePath(rawData.remainingRequest)
+            : rawData.remainingRequest,
+          dependencies: buildSnapshotReadyDeps(rawData.dependencies, false),
           contextDependencies: buildSnapshotReadyDeps(
-            rawData.contextDependencies
+            rawData.contextDependencies,
+            false
           ),
         });
       }, new Map())
@@ -82,6 +88,32 @@ describe('cacheContext option', () => {
     );
     expect(stats.compilation.warnings).toMatchSnapshot('warnings');
     expect(stats.compilation.errors).toMatchSnapshot('errors');
+  });
+
+  it('should generate non normalized relative paths to the project root on windows', async () => {
+    const testId = './basic/index.js';
+    await webpack(testId, mockRelativeWebpackConfig);
+
+    const cacheLoaderCallsData = buildCacheLoaderCallsData(
+      mockCacheLoaderWriteFn.mock.calls,
+      false
+    );
+
+    if (process.platform === 'win32') {
+      expect(
+        cacheLoaderCallsData.every(
+          (call) =>
+            call.remainingRequest !== normalizePath(call.remainingRequest)
+        )
+      ).toBeTruthy();
+    } else {
+      expect(
+        cacheLoaderCallsData.every(
+          (call) =>
+            call.remainingRequest === normalizePath(call.remainingRequest)
+        )
+      ).toBeTruthy();
+    }
   });
 
   it('should generate absolute paths to the project root', async () => {
