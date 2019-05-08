@@ -9,6 +9,7 @@ const async = require('neo-async');
 const crypto = require('crypto');
 const mkdirp = require('mkdirp');
 const findCacheDir = require('find-cache-dir');
+const BJSON = require('buffer-json');
 
 const { getOptions } = require('loader-utils');
 const validateOptions = require('schema-utils');
@@ -211,7 +212,7 @@ const directories = new Set();
 
 function write(key, data, callback) {
   const dirname = path.dirname(key);
-  const content = JSON.stringify(data);
+  const content = BJSON.stringify(data);
 
   if (directories.has(dirname)) {
     // for performance skip creating directory
@@ -238,7 +239,7 @@ function read(key, callback) {
     }
 
     try {
-      const data = JSON.parse(content);
+      const data = BJSON.parse(content);
       callback(null, data);
     } catch (e) {
       callback(e);
@@ -253,4 +254,5 @@ function cacheKey(options, request) {
   return path.join(cacheDirectory, `${hash}.json`);
 }
 
+export const raw = true;
 export { loader as default, pitch };
