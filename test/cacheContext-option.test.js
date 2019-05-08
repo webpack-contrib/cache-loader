@@ -99,6 +99,8 @@ describe('cacheContext option', () => {
       false
     );
 
+    // NOTE: this test prevents to generate normalized paths for the generated cache assets
+    // under windows which will break the watcher due to a bug on watchpack/chokidar
     if (process.platform === 'win32') {
       expect(
         cacheLoaderCallsData.every(
