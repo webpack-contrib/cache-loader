@@ -59,10 +59,13 @@ const buildCacheLoaderCallsData = (calls, normalizePaths = true) =>
           remainingRequest: normalizePaths
             ? normalizePath(rawData.remainingRequest)
             : rawData.remainingRequest,
-          dependencies: buildSnapshotReadyDeps(rawData.dependencies, false),
+          dependencies: buildSnapshotReadyDeps(
+            rawData.dependencies,
+            normalizePaths
+          ),
           contextDependencies: buildSnapshotReadyDeps(
             rawData.contextDependencies,
-            false
+            normalizePaths
           ),
         });
       }, new Map())
