@@ -4,7 +4,6 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const normalizePath = require('normalize-path');
 const async = require('neo-async');
 const crypto = require('crypto');
 const mkdirp = require('mkdirp');
@@ -38,13 +37,13 @@ function pathWithCacheContext(cacheContext, originalPath) {
   if (originalPath.includes(cacheContext)) {
     return originalPath
       .split('!')
-      .map((subPath) => normalizePath(path.relative(cacheContext, subPath)))
+      .map((subPath) => path.relative(cacheContext, subPath))
       .join('!');
   }
 
   return originalPath
     .split('!')
-    .map((subPath) => normalizePath(path.resolve(cacheContext, subPath)))
+    .map((subPath) => path.resolve(cacheContext, subPath))
     .join('!');
 }
 
