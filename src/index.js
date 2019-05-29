@@ -175,6 +175,8 @@ function pitch(remainingRequest, prevRequest, dataInput) {
             return;
           }
 
+          // If the compare function returns false
+          // we not read from cache
           if (compareFn(stats, dep) !== true) {
             eachCallback(true);
             return;
