@@ -1,6 +1,15 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [3.0.1](https://github.com/webpack-contrib/cache-loader/compare/v3.0.0...v3.0.1) (2019-05-13)
+
+
+### Bug Fixes
+
+* watch on windows ([#74](https://github.com/webpack-contrib/cache-loader/issues/74)) ([4bc6732](https://github.com/webpack-contrib/cache-loader/commit/4bc6732))
+
+
 
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/webpack-contrib/cache-loader/compare/v2.0.1...v3.0.0) (2019-04-19)
