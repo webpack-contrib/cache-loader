@@ -27,6 +27,7 @@ const defaults = {
   read,
   readOnly: false,
   write,
+  compare,
 };
 
 function pathWithCacheContext(cacheContext, originalPath) {
@@ -138,6 +139,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
     readOnly,
     cacheContext,
     cacheKey: cacheKeyFn,
+    compare: compareFn,
   } = options;
 
   const callback = this.async();
@@ -173,7 +175,9 @@ function pitch(remainingRequest, prevRequest, dataInput) {
             return;
           }
 
-          if (stats.mtime.getTime() !== dep.mtime) {
+          // If the compare function returns false
+          // we not read from cache
+          if (compareFn(stats, dep) !== true) {
             eachCallback(true);
             return;
           }
@@ -251,6 +255,10 @@ function cacheKey(options, request) {
   const hash = digest(`${cacheIdentifier}\n${request}`);
 
   return path.join(cacheDirectory, `${hash}.json`);
+}
+
+function compare(stats, dep) {
+  return stats.mtime.getTime() === dep.mtime;
 }
 
 export const raw = true;
