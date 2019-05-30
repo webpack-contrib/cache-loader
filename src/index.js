@@ -181,21 +181,23 @@ function pitch(remainingRequest, prevRequest, dataInput) {
             return;
           }
 
+          const compStats = stats;
+          const compDep = dep;
           if (precision > 1) {
             ['atime', 'mtime', 'ctime', 'birthtime'].forEach((key) => {
               const msKey = `${key}Ms`;
               const ms = roundMs(stats[msKey], precision);
 
-              stats[msKey] = ms;
-              stats[key] = new Date(ms);
+              compStats[msKey] = ms;
+              compStats[key] = new Date(ms);
             });
 
-            dep.mtime = roundMs(dep.mtime, precision);
+            compDep.mtime = roundMs(dep.mtime, precision);
           }
 
           // If the compare function returns false
           // we not read from cache
-          if (compareFn(stats, dep) !== true) {
+          if (compareFn(compStats, compDep) !== true) {
             eachCallback(true);
             return;
           }
