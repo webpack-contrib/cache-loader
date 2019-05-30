@@ -6,7 +6,7 @@ const mockWebpackConfig = {
     options: {
       compare: () => {
         mockCacheLoaderCompareFn();
-        return false;
+        return true;
       },
     },
   },
