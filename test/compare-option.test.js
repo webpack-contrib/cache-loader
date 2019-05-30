@@ -16,6 +16,7 @@ describe('compare option', () => {
   it('should call compare function', async () => {
     const testId = './basic/index.js';
     await webpack(testId, mockWebpackConfig);
+    await webpack(testId, mockWebpackConfig);
     expect(mockCacheLoaderCompareFn).toHaveBeenCalled();
   });
 });
