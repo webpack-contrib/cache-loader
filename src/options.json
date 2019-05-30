@@ -21,6 +21,9 @@
     },
     "write": {
       "instanceof": "Function"
+    },
+    "compare": {
+      "instanceof": "Function"
     }
   },
   "additionalProperties": false
