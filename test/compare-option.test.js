@@ -15,6 +15,10 @@ const mockWebpackConfig = {
 };
 
 describe('compare option', () => {
+  beforeEach(() => {
+    mockCacheLoaderCompareFn.mockClear();
+  });
+
   it('should call compare function', async () => {
     const testId = './basic/index.js';
     await webpack(testId, mockWebpackConfig);
@@ -36,7 +40,9 @@ describe('compare option', () => {
     await webpack(testId, mockWebpackConfig);
     expect(mockCacheLoaderCompareFn).toHaveBeenCalled();
 
+    // eslint-disable-next-line
     const stats = mockCacheLoaderCompareFn.mock.calls[0][0];
+    // eslint-disable-next-line
     const dep = mockCacheLoaderCompareFn.mock.calls[0][1];
     expect(stats).toBeDefined();
     expect(stats instanceof fs.Stats);
