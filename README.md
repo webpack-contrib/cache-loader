@@ -46,16 +46,17 @@ module.exports = {
 
 ## Options
 
-|         Name          |                       Type                       |                                   n Default                                             | Description                                                                                                                                                            |
-| :-------------------: | :----------------------------------------------: | :---------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|  **`cacheContext`**   |                    `{String}`                    |                   `undefined`                                           | Allows you to override the default cache context in order to generate the cache relatively to a path. By default it will use absolute paths                            |
-|    **`cacheKey`**     |    `{Function(options, request) -> {String}}`    |                   `undefined`                                           | Allows you to override default cache key generator                                                                                                                     |
-| **`cacheDirectory`**  |                    `{String}`                    |         `findCacheDir({ name: 'cache-loader' }) or os.tmpdir()`         | Provide a cache directory where cache items should be stored (used for default read/write implementation)                                      |
-| **`cacheIdentifier`** |                    `{String}`                    | `cache-loader:{version} {process.env.NODE_ENV}`                         | Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders (used for default read/write implementation) |
-|      **`write`**      | `{Function(cacheKey, data, callback) -> {void}}` |                   `undefined`                                           | Allows you to override default write cache data to file (e.g. Redis, memcached)                                                                                        |
-|      **`read`**       |    `{Function(cacheKey, callback) -> {void}}`    |                   `undefined`                                           | Allows you to override default read cache data from file                                                                                                               |
-|    **`readOnly`**     |                    `{Boolean}`                   |                   `false`                                               | Allows you to override default value and make the cache read only (useful for some environments where you don't want the cache to be updated, only read from it)       |
-|    **`precision`**    |                    `{Number}`                    |                   `0`                                                   | Round `mtime` by this number of milliseconds before comparing              |
+|         Name          |                       Type                       |                        n Default                        | Description                                                                                                                                                            |
+| :-------------------: | :----------------------------------------------: | :-----------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|  **`cacheContext`**   |                    `{String}`                    |                       `undefined`                       | Allows you to override the default cache context in order to generate the cache relatively to a path. By default it will use absolute paths                            |
+|    **`cacheKey`**     |    `{Function(options, request) -> {String}}`    |                       `undefined`                       | Allows you to override default cache key generator                                                                                                                     |
+| **`cacheDirectory`**  |                    `{String}`                    | `findCacheDir({ name: 'cache-loader' }) or os.tmpdir()` | Provide a cache directory where cache items should be stored (used for default read/write implementation)                                                              |
+| **`cacheIdentifier`** |                    `{String}`                    |     `cache-loader:{version} {process.env.NODE_ENV}`     | Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders (used for default read/write implementation) |
+|      **`compare`**    |    `{Function(stats, dep) -> {Boolean}}`         |                       `undefined`                       | Allows you to override default comparison function between the cached dependency and the one is being read. Return `true` to use the cached resource                   |
+|    **`precision`**    |                    `{Number}`                    |                           `0`                           | Round `mtime` by this number of milliseconds before comparing                                                                                                          |
+|      **`read`**       |    `{Function(cacheKey, callback) -> {void}}`    |                       `undefined`                       | Allows you to override default read cache data from file                                                                                                               |
+|    **`readOnly`**     |                   `{Boolean}`                    |                         `false`                         | Allows you to override default value and make the cache read only (useful for some environments where you don't want the cache to be updated, only read from it)       |
+|      **`write`**      | `{Function(cacheKey, data, callback) -> {void}}` |                       `undefined`                       | Allows you to override default write cache data to file (e.g. Redis, memcached)                                                                                        |
 
 ## Examples
 
@@ -168,8 +169,8 @@ Please take a moment to read our contributing guidelines if you haven't yet done
 [node-url]: https://nodejs.org
 [deps]: https://david-dm.org/webpack-contrib/cache-loader.svg
 [deps-url]: https://david-dm.org/webpack-contrib/cache-loader
-[tests]: https://img.shields.io/circleci/project/github/webpack-contrib/cache-loader.svg
-[tests-url]: https://circleci.com/gh/webpack-contrib/cache-loader
+[tests]: https://dev.azure.com/webpack-contrib/cache-loader/_apis/build/status/webpack-contrib.cache-loader?branchName=master
+[tests-url]: https://dev.azure.com/webpack-contrib/cache-loader/_build/latest?definitionId=4&branchName=master
 [cover]: https://codecov.io/gh/webpack-contrib/cache-loader/branch/master/graph/badge.svg
 [cover-url]: https://codecov.io/gh/webpack-contrib/cache-loader
 [chat]: https://badges.gitter.im/webpack/webpack.svg

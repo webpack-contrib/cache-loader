@@ -4,7 +4,6 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const normalizePath = require('normalize-path');
 const async = require('neo-async');
 const crypto = require('crypto');
 const mkdirp = require('mkdirp');
@@ -25,10 +24,11 @@ const defaults = {
   cacheDirectory: findCacheDir({ name: 'cache-loader' }) || os.tmpdir(),
   cacheIdentifier: `cache-loader:${pkg.version} ${env}`,
   cacheKey,
+  compare,
+  precision: 0,
   read,
   readOnly: false,
   write,
-  precision: 0,
 };
 
 function pathWithCacheContext(cacheContext, originalPath) {
@@ -39,13 +39,13 @@ function pathWithCacheContext(cacheContext, originalPath) {
   if (originalPath.includes(cacheContext)) {
     return originalPath
       .split('!')
-      .map((subPath) => normalizePath(path.relative(cacheContext, subPath)))
+      .map((subPath) => path.relative(cacheContext, subPath))
       .join('!');
   }
 
   return originalPath
     .split('!')
-    .map((subPath) => normalizePath(path.resolve(cacheContext, subPath)))
+    .map((subPath) => path.resolve(cacheContext, subPath))
     .join('!');
 }
 
@@ -140,10 +140,11 @@ function pitch(remainingRequest, prevRequest, dataInput) {
   validateOptions(schema, options, 'Cache Loader (Pitch)');
 
   const {
-    read: readFn,
-    readOnly,
     cacheContext,
     cacheKey: cacheKeyFn,
+    compare: compareFn,
+    read: readFn,
+    readOnly,
     precision,
   } = options;
 
@@ -192,7 +193,9 @@ function pitch(remainingRequest, prevRequest, dataInput) {
             dep.mtime = roundMs(dep.mtime, precision);
           }
 
-          if (stats.mtime.getTime() !== dep.mtime) {
+          // If the compare function returns false
+          // we not read from cache
+          if (compareFn(stats, dep) !== true) {
             eachCallback(true);
             return;
           }
@@ -270,6 +273,10 @@ function cacheKey(options, request) {
   const hash = digest(`${cacheIdentifier}\n${request}`);
 
   return path.join(cacheDirectory, `${hash}.json`);
+}
+
+function compare(stats, dep) {
+  return stats.mtime.getTime() === dep.mtime;
 }
 
 export const raw = true;
