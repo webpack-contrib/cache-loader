@@ -13,6 +13,12 @@
     "cacheDirectory": {
       "type": "string"
     },
+    "compare": {
+      "instanceof": "Function"
+    },
+    "precision": {
+      "type": "number"
+    },
     "read": {
       "instanceof": "Function"
     },
@@ -20,9 +26,6 @@
       "type": "boolean"
     },
     "write": {
-      "instanceof": "Function"
-    },
-    "compare": {
       "instanceof": "Function"
     }
   },

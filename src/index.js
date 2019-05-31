@@ -24,10 +24,11 @@ const defaults = {
   cacheDirectory: findCacheDir({ name: 'cache-loader' }) || os.tmpdir(),
   cacheIdentifier: `cache-loader:${pkg.version} ${env}`,
   cacheKey,
+  compare,
+  precision: 0,
   read,
   readOnly: false,
   write,
-  compare,
 };
 
 function pathWithCacheContext(cacheContext, originalPath) {
@@ -46,6 +47,10 @@ function pathWithCacheContext(cacheContext, originalPath) {
     .split('!')
     .map((subPath) => path.resolve(cacheContext, subPath))
     .join('!');
+}
+
+function roundMs(mtime, precision) {
+  return Math.floor(mtime / precision) * precision;
 }
 
 function loader(...args) {
@@ -135,11 +140,12 @@ function pitch(remainingRequest, prevRequest, dataInput) {
   validateOptions(schema, options, 'Cache Loader (Pitch)');
 
   const {
-    read: readFn,
-    readOnly,
     cacheContext,
     cacheKey: cacheKeyFn,
     compare: compareFn,
+    read: readFn,
+    readOnly,
+    precision,
   } = options;
 
   const callback = this.async();
@@ -175,9 +181,23 @@ function pitch(remainingRequest, prevRequest, dataInput) {
             return;
           }
 
+          const compStats = stats;
+          const compDep = dep;
+          if (precision > 1) {
+            ['atime', 'mtime', 'ctime', 'birthtime'].forEach((key) => {
+              const msKey = `${key}Ms`;
+              const ms = roundMs(stats[msKey], precision);
+
+              compStats[msKey] = ms;
+              compStats[key] = new Date(ms);
+            });
+
+            compDep.mtime = roundMs(dep.mtime, precision);
+          }
+
           // If the compare function returns false
           // we not read from cache
-          if (compareFn(stats, dep) !== true) {
+          if (compareFn(compStats, compDep) !== true) {
             eachCallback(true);
             return;
           }
