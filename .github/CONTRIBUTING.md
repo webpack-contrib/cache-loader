@@ -130,3 +130,23 @@ This release is not backwards compatible with `Webpack 2.x` due to breaking chan
 Migration: see webpack/webpack#5225
 
 ```
+
+## Testing Your Pull Request
+
+You may have the need to test your changes in a real-world project or dependent
+module. Thankfully, Github provides a means to do this. Add a dependency to the
+`package.json` for such a project as follows:
+
+```json
+{
+  "devDependencies": {
+    "cache-loader": "webpack-contrib/cache-loader#{id}/head"
+  }
+}
+```
+
+Where `{id}` is the # ID of your Pull Request.
+
+## Thanks
+
+For your interest, time, understanding, and for following this simple guide.
