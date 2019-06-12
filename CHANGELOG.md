@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://github.com/webpack-contrib/cache-loader/compare/v3.0.1...v4.0.0) (2019-06-05)
+
+
+### chore
+
+* **deps:** update ([#81](https://github.com/webpack-contrib/cache-loader/issues/81)) ([71e9e68](https://github.com/webpack-contrib/cache-loader/commit/71e9e68))
+
+
+### BREAKING CHANGES
+
+* **deps:** minimum required nodejs version is `8.9.0`
+
+
+
 ### [3.0.1](https://github.com/webpack-contrib/cache-loader/compare/v3.0.0...v3.0.1) (2019-05-13)
 
 
