@@ -210,13 +210,9 @@ function pitch(remainingRequest, prevRequest, dataInput) {
           callback();
           return;
         }
-        cacheData.dependencies.forEach((dep) =>
-          this.addDependency(pathWithCacheContext(cacheContext, dep.path))
-        );
+        cacheData.dependencies.forEach((dep) => this.addDependency(dep.path));
         cacheData.contextDependencies.forEach((dep) =>
-          this.addContextDependency(
-            pathWithCacheContext(cacheContext, dep.path)
-          )
+          this.addContextDependency(dep.path)
         );
         callback(null, ...cacheData.result);
       }
