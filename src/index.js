@@ -120,7 +120,10 @@ function loader(...args) {
       writeFn(
         data.cacheKey,
         {
-          remainingRequest: data.remainingRequest,
+          remainingRequest: pathWithCacheContext(
+            options.cacheContext,
+            data.remainingRequest
+          ),
           dependencies: deps,
           contextDependencies: contextDeps,
           result: args,
@@ -151,14 +154,20 @@ function pitch(remainingRequest, prevRequest, dataInput) {
   const callback = this.async();
   const data = dataInput;
 
-  data.remainingRequest = pathWithCacheContext(cacheContext, remainingRequest);
+  data.remainingRequest = remainingRequest;
   data.cacheKey = cacheKeyFn(options, data.remainingRequest);
   readFn(data.cacheKey, (readErr, cacheData) => {
     if (readErr) {
       callback();
       return;
     }
-    if (cacheData.remainingRequest !== data.remainingRequest) {
+
+    // We need to patch every path within data on cache with the cacheContext,
+    // or it would cause problems when watching
+    if (
+      pathWithCacheContext(options.cacheContext, cacheData.remainingRequest) !==
+      data.remainingRequest
+    ) {
       // in case of a hash conflict
       callback();
       return;
@@ -167,7 +176,14 @@ function pitch(remainingRequest, prevRequest, dataInput) {
     async.each(
       cacheData.dependencies.concat(cacheData.contextDependencies),
       (dep, eachCallback) => {
-        FS.stat(dep.path, (statErr, stats) => {
+        // Applying reverse path transformation, in case they are relatives, when
+        // reading from cache
+        const contextDep = {
+          ...dep,
+          path: pathWithCacheContext(options.cacheContext, dep.path),
+        };
+
+        FS.stat(contextDep.path, (statErr, stats) => {
           if (statErr) {
             eachCallback(statErr);
             return;
@@ -182,7 +198,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
           }
 
           const compStats = stats;
-          const compDep = dep;
+          const compDep = contextDep;
           if (precision > 1) {
             ['atime', 'mtime', 'ctime', 'birthtime'].forEach((key) => {
               const msKey = `${key}Ms`;
@@ -210,9 +226,13 @@ function pitch(remainingRequest, prevRequest, dataInput) {
           callback();
           return;
         }
-        cacheData.dependencies.forEach((dep) => this.addDependency(dep.path));
+        cacheData.dependencies.forEach((dep) =>
+          this.addDependency(pathWithCacheContext(cacheContext, dep.path))
+        );
         cacheData.contextDependencies.forEach((dep) =>
-          this.addContextDependency(dep.path)
+          this.addContextDependency(
+            pathWithCacheContext(cacheContext, dep.path)
+          )
         );
         callback(null, ...cacheData.result);
       }
