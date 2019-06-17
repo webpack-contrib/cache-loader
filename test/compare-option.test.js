@@ -4,6 +4,7 @@ const path = require('path');
 const { webpack } = require('./helpers');
 
 const mockCacheLoaderCompareFn = jest.fn();
+const mockCacheLoaderCompareOnRelativeFn = jest.fn();
 const mockWebpackConfig = {
   loader: {
     options: {
@@ -18,9 +19,9 @@ const mockWebpackConfig = {
 const mockRelativeWebpackConfig = {
   loader: {
     options: {
-      cacheContext: path.resolve('.'),
+      cacheContext: path.resolve('../'),
       compare: (stats, dep) => {
-        mockCacheLoaderCompareFn(stats, dep);
+        mockCacheLoaderCompareOnRelativeFn(stats, dep);
         return true;
       },
     },
@@ -67,10 +68,10 @@ describe('compare option', () => {
     const testId = './basic/index.js';
     await webpack(testId, mockRelativeWebpackConfig);
     await webpack(testId, mockRelativeWebpackConfig);
-    expect(mockCacheLoaderCompareFn).toHaveBeenCalled();
+    expect(mockCacheLoaderCompareOnRelativeFn).toHaveBeenCalled();
 
     // eslint-disable-next-line
-    const dep = mockCacheLoaderCompareFn.mock.calls[0][1];
+    const dep = mockCacheLoaderCompareOnRelativeFn.mock.calls[0][1];
     expect(path.isAbsolute(dep.path)).toBeTruthy();
   });
 });
