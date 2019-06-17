@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const { webpack } = require('./helpers');
 
@@ -14,6 +15,17 @@ const mockWebpackConfig = {
   },
 };
 
+const mockRelativeWebpackConfig = {
+  loader: {
+    options: {
+      cacheContext: path.resolve('.'),
+      compare: (stats, dep) => {
+        mockCacheLoaderCompareFn(stats, dep);
+        return true;
+      },
+    },
+  },
+};
 describe('compare option', () => {
   beforeEach(() => {
     mockCacheLoaderCompareFn.mockClear();
@@ -49,5 +61,16 @@ describe('compare option', () => {
     expect(dep).toBeDefined();
     expect(dep.mtime).toBeDefined();
     expect(dep.path).toBeDefined();
+  });
+
+  it('should call compare with contextualized dep', async () => {
+    const testId = './basic/index.js';
+    await webpack(testId, mockRelativeWebpackConfig);
+    await webpack(testId, mockRelativeWebpackConfig);
+    expect(mockCacheLoaderCompareFn).toHaveBeenCalled();
+
+    // eslint-disable-next-line
+    const dep = mockCacheLoaderCompareFn.mock.calls[0][1];
+    expect(path.isAbsolute(dep.path)).toBeTruthy();
   });
 });
