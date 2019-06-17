@@ -89,7 +89,8 @@ describe('cacheContext option', () => {
 
     expect(
       cacheLoaderCallsData.every(
-        (call) => !call.remainingRequest.includes(path.resolve('.'))
+        (call) =>
+          !call.remainingRequest.includes(normalizePath(path.resolve('.')))
       )
     ).toBeTruthy();
     expect(BJSON.stringify(cacheLoaderCallsData, 2)).toMatchSnapshot(
@@ -140,7 +141,7 @@ describe('cacheContext option', () => {
 
     expect(
       cacheLoaderCallsData.every((call) =>
-        call.remainingRequest.includes(path.resolve('.'))
+        call.remainingRequest.includes(normalizePath(path.resolve('.')))
       )
     ).toBeTruthy();
     expect(stats.compilation.warnings).toMatchSnapshot('warnings');
