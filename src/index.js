@@ -53,6 +53,10 @@ function roundMs(mtime, precision) {
   return Math.floor(mtime / precision) * precision;
 }
 
+// NOTE: We should only apply `pathWithCacheContext` transformations
+// right before writing. Every other internal steps with the paths
+// should be accomplish over absolute paths. Otherwise we have the risk
+// to break watchpack -> chokidar watch logic  over webpack@4 --watch
 function loader(...args) {
   const options = Object.assign({}, defaults, getOptions(this));
   validateOptions(schema, options, 'Cache Loader');
@@ -137,6 +141,10 @@ function loader(...args) {
   );
 }
 
+// NOTE: We should apply `pathWithCacheContext` transformations
+// right after reading. Every other internal steps with the paths
+// should be accomplish over absolute paths. Otherwise we have the risk
+// to break watchpack -> chokidar watch logic  over webpack@4 --watch
 function pitch(remainingRequest, prevRequest, dataInput) {
   const options = Object.assign({}, defaults, getOptions(this));
 
