@@ -1,10 +1,15 @@
-const { webpack } = require('./helpers');
+const del = require('del');
+
+const { getRandomTmpDir, webpack } = require('./helpers');
+
+const mockRandomTmpDir = getRandomTmpDir();
 
 const mockCacheLoaderCompareFn = jest.fn();
 const mockCacheLoaderCompareWithPrecisionFn = jest.fn();
 const mockWebpackConfig = {
   loader: {
     options: {
+      cacheDirectory: mockRandomTmpDir,
       compare: (stats, dep) => {
         mockCacheLoaderCompareFn(stats, dep);
         return true;
@@ -15,6 +20,7 @@ const mockWebpackConfig = {
 const mockWebpackWithPrecisionConfig = {
   loader: {
     options: {
+      cacheDirectory: mockRandomTmpDir,
       compare: (stats, dep) => {
         mockCacheLoaderCompareWithPrecisionFn(stats, dep);
         return true;
@@ -28,6 +34,10 @@ describe('precision option', () => {
   beforeEach(() => {
     mockCacheLoaderCompareFn.mockClear();
     mockCacheLoaderCompareWithPrecisionFn.mockClear();
+  });
+
+  afterAll(() => {
+    del.sync(mockRandomTmpDir);
   });
 
   it('should not apply precision', async () => {
