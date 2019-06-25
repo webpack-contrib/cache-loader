@@ -73,8 +73,14 @@ const buildCacheLoaderCallsData = (calls, normalizePaths = true) =>
   ).sort(sortData);
 
 describe('cacheContext option', () => {
+  beforeEach(() => {
+    mockCacheLoaderWriteFn.mockClear();
+  });
+
   it('should generate relative paths to the project root', async () => {
     const testId = './basic/index.js';
+    await webpack(testId, mockBaseWebpackConfig);
+    mockCacheLoaderWriteFn.mockClear();
     const stats = await webpack(testId, mockRelativeWebpackConfig);
 
     const cacheLoaderCallsData = buildCacheLoaderCallsData(
@@ -83,7 +89,8 @@ describe('cacheContext option', () => {
 
     expect(
       cacheLoaderCallsData.every(
-        (call) => !call.remainingRequest.includes(path.resolve('.'))
+        (call) =>
+          !call.remainingRequest.includes(normalizePath(path.resolve('.')))
       )
     ).toBeTruthy();
     expect(BJSON.stringify(cacheLoaderCallsData, 2)).toMatchSnapshot(
@@ -95,6 +102,7 @@ describe('cacheContext option', () => {
 
   it('should generate non normalized relative paths to the project root on windows', async () => {
     const testId = './basic/index.js';
+    await webpack(testId, mockBaseWebpackConfig);
     await webpack(testId, mockRelativeWebpackConfig);
 
     const cacheLoaderCallsData = buildCacheLoaderCallsData(
@@ -123,6 +131,8 @@ describe('cacheContext option', () => {
 
   it('should generate absolute paths to the project root', async () => {
     const testId = './basic/index.js';
+    await webpack(testId, mockRelativeWebpackConfig);
+    mockCacheLoaderWriteFn.mockClear();
     const stats = await webpack(testId, mockBaseWebpackConfig);
 
     const cacheLoaderCallsData = buildCacheLoaderCallsData(
@@ -131,15 +141,16 @@ describe('cacheContext option', () => {
 
     expect(
       cacheLoaderCallsData.every((call) =>
-        call.remainingRequest.includes(path.resolve('.'))
+        call.remainingRequest.includes(normalizePath(path.resolve('.')))
       )
-    ).toBeFalsy();
+    ).toBeTruthy();
     expect(stats.compilation.warnings).toMatchSnapshot('warnings');
     expect(stats.compilation.errors).toMatchSnapshot('errors');
   });
 
   it('should load as a raw loader to support images', async () => {
     const testId = './img/index.js';
+    await webpack(testId, mockRelativeWebpackConfig);
     const stats = await webpack(testId, mockBaseWebpackConfig);
 
     const cacheLoaderCallsData = buildCacheLoaderCallsData(

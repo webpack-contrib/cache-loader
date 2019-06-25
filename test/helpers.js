@@ -1,8 +1,10 @@
+const os = require('os');
 const path = require('path');
 
 const del = require('del');
-const webpack = require('webpack');
 const MemoryFS = require('memory-fs');
+const uuidV4 = require('uuid/v4');
+const webpack = require('webpack');
 
 const moduleConfig = (config) => {
   return {
@@ -91,6 +93,11 @@ function compile(fixture, config = {}, options = {}) {
   );
 }
 
+function getRandomTmpDir() {
+  return path.resolve(os.tmpdir(), `test_${uuidV4()}`);
+}
+
 module.exports = {
+  getRandomTmpDir,
   webpack: compile,
 };

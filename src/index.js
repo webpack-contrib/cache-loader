@@ -53,6 +53,10 @@ function roundMs(mtime, precision) {
   return Math.floor(mtime / precision) * precision;
 }
 
+// NOTE: We should only apply `pathWithCacheContext` transformations
+// right before writing. Every other internal steps with the paths
+// should be accomplish over absolute paths. Otherwise we have the risk
+// to break watchpack -> chokidar watch logic  over webpack@4 --watch
 function loader(...args) {
   const options = Object.assign({}, defaults, getOptions(this));
   validateOptions(schema, options, 'Cache Loader');
@@ -120,7 +124,10 @@ function loader(...args) {
       writeFn(
         data.cacheKey,
         {
-          remainingRequest: data.remainingRequest,
+          remainingRequest: pathWithCacheContext(
+            options.cacheContext,
+            data.remainingRequest
+          ),
           dependencies: deps,
           contextDependencies: contextDeps,
           result: args,
@@ -134,6 +141,10 @@ function loader(...args) {
   );
 }
 
+// NOTE: We should apply `pathWithCacheContext` transformations
+// right after reading. Every other internal steps with the paths
+// should be accomplish over absolute paths. Otherwise we have the risk
+// to break watchpack -> chokidar watch logic  over webpack@4 --watch
 function pitch(remainingRequest, prevRequest, dataInput) {
   const options = Object.assign({}, defaults, getOptions(this));
 
@@ -151,14 +162,20 @@ function pitch(remainingRequest, prevRequest, dataInput) {
   const callback = this.async();
   const data = dataInput;
 
-  data.remainingRequest = pathWithCacheContext(cacheContext, remainingRequest);
+  data.remainingRequest = remainingRequest;
   data.cacheKey = cacheKeyFn(options, data.remainingRequest);
   readFn(data.cacheKey, (readErr, cacheData) => {
     if (readErr) {
       callback();
       return;
     }
-    if (cacheData.remainingRequest !== data.remainingRequest) {
+
+    // We need to patch every path within data on cache with the cacheContext,
+    // or it would cause problems when watching
+    if (
+      pathWithCacheContext(options.cacheContext, cacheData.remainingRequest) !==
+      data.remainingRequest
+    ) {
       // in case of a hash conflict
       callback();
       return;
@@ -167,7 +184,14 @@ function pitch(remainingRequest, prevRequest, dataInput) {
     async.each(
       cacheData.dependencies.concat(cacheData.contextDependencies),
       (dep, eachCallback) => {
-        FS.stat(dep.path, (statErr, stats) => {
+        // Applying reverse path transformation, in case they are relatives, when
+        // reading from cache
+        const contextDep = {
+          ...dep,
+          path: pathWithCacheContext(options.cacheContext, dep.path),
+        };
+
+        FS.stat(contextDep.path, (statErr, stats) => {
           if (statErr) {
             eachCallback(statErr);
             return;
@@ -182,7 +206,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
           }
 
           const compStats = stats;
-          const compDep = dep;
+          const compDep = contextDep;
           if (precision > 1) {
             ['atime', 'mtime', 'ctime', 'birthtime'].forEach((key) => {
               const msKey = `${key}Ms`;
