@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.0](https://github.com/webpack-contrib/cache-loader/compare/v4.0.1...v4.1.0) (2019-07-18)
+
+
+### Features
+
+* improved validation error messages ([#89](https://github.com/webpack-contrib/cache-loader/issues/89)) ([074bcdc](https://github.com/webpack-contrib/cache-loader/commit/074bcdc))
+
+
+
 ### [4.0.1](https://github.com/webpack-contrib/cache-loader/compare/v4.0.0...v4.0.1) (2019-06-26)
 
 
