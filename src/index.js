@@ -59,7 +59,11 @@ function roundMs(mtime, precision) {
 // to break watchpack -> chokidar watch logic  over webpack@4 --watch
 function loader(...args) {
   const options = Object.assign({}, defaults, getOptions(this));
-  validateOptions(schema, options, 'Cache Loader');
+
+  validateOptions(schema, options, {
+    name: 'Cache Loader',
+    baseDataPath: 'options',
+  });
 
   const { readOnly, write: writeFn } = options;
 
@@ -148,7 +152,10 @@ function loader(...args) {
 function pitch(remainingRequest, prevRequest, dataInput) {
   const options = Object.assign({}, defaults, getOptions(this));
 
-  validateOptions(schema, options, 'Cache Loader (Pitch)');
+  validateOptions(schema, options, {
+    name: 'Cache Loader (Pitch)',
+    baseDataPath: 'options',
+  });
 
   const {
     cacheContext,
