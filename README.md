@@ -86,7 +86,7 @@ module.exports = {
 // Or different database client - memcached, mongodb, ...
 const redis = require('redis');
 const crypto = require('crypto');
-
+const BJSON = require("buffer-json");
 // ...
 // connect to client
 // ...
@@ -117,7 +117,7 @@ function read(key, callback) {
     }
 
     try {
-      let data = JSON.parse(result);
+      let data = BJSON.parse(result);
       callback(null, data);
     } catch (e) {
       callback(e);
@@ -127,7 +127,7 @@ function read(key, callback) {
 
 // Write data to database under cacheKey
 function write(key, data, callback) {
-  client.set(key, JSON.stringify(data), 'EX', BUILD_CACHE_TIMEOUT, callback);
+  client.set(key, BJSON.stringify(data), 'EX', BUILD_CACHE_TIMEOUT, callback);
 }
 
 module.exports = {
