@@ -21,7 +21,10 @@ const schema = require('./options.json');
 
 const defaults = {
   cacheContext: '',
-  cacheDirectory: findCacheDir({ name: 'cache-loader' }) || os.tmpdir(),
+  cacheDirectory:
+    process.env.CACHE_LOADER_CACHE_DIR ||
+    findCacheDir({ name: 'cache-loader' }) ||
+    os.tmpdir(),
   cacheIdentifier: `cache-loader:${pkg.version} ${env}`,
   cacheKey,
   compare,
