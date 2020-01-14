@@ -10,11 +10,11 @@
       "instanceof": "Function"
     },
     "cacheIdentifier": {
-      "description": "Provide a cache directory where cache items should be stored (used for default read/write implementation).",
+      "description": "Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders (used for default read/write implementation).",
       "type": "string"
     },
     "cacheDirectory": {
-      "description": "Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders (used for default read/write implementation).",
+      "description": "Provide a cache directory where cache items should be stored (used for default read/write implementation).",
       "type": "string"
     },
     "compare": {
