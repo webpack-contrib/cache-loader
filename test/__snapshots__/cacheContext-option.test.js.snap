@@ -10,6 +10,10 @@ exports[`cacheContext option should generate relative paths to the project root:
 "[
   {
     \\"remainingRequest\\": \\"test/fixtures/basic/file_1.js\\",
+    \\"source\\": {
+      \\"type\\": \\"Buffer\\",
+      \\"data\\": \\"base64:LyogZXNsaW50LWRpc2FibGUgKi8KY29uc29sZS5sb2coJ2ZpbGVfMScpOwo=\\"
+    },
     \\"dependencies\\": [
       {
         \\"path\\": \\"test/fixtures/basic/file_1.js\\",
@@ -30,6 +34,10 @@ exports[`cacheContext option should generate relative paths to the project root:
   },
   {
     \\"remainingRequest\\": \\"test/fixtures/basic/file_2.js\\",
+    \\"source\\": {
+      \\"type\\": \\"Buffer\\",
+      \\"data\\": \\"base64:LyogZXNsaW50LWRpc2FibGUgKi8KY29uc29sZS5sb2coJ2ZpbGVfMicpOwo=\\"
+    },
     \\"dependencies\\": [
       {
         \\"path\\": \\"test/fixtures/basic/file_2.js\\",
@@ -50,6 +58,10 @@ exports[`cacheContext option should generate relative paths to the project root:
   },
   {
     \\"remainingRequest\\": \\"test/fixtures/basic/index.js\\",
+    \\"source\\": {
+      \\"type\\": \\"Buffer\\",
+      \\"data\\": \\"base64:LyogZXNsaW50LWRpc2FibGUgKi8KcmVxdWlyZSgnLi9maWxlXzEuanMnKTsKcmVxdWlyZSgnLi9maWxlXzIuanMnKTsKCmNvbnNvbGUubG9nKCdiYXNpY19lbnRyeScpOwo=\\"
+    },
     \\"dependencies\\": [
       {
         \\"path\\": \\"test/fixtures/basic/index.js\\",
