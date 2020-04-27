@@ -94,10 +94,7 @@ const crypto = require('crypto');
 const BUILD_CACHE_TIMEOUT = 24 * 3600; // 1 day
 
 function digest(str) {
-  return crypto
-    .createHash('md5')
-    .update(str)
-    .digest('hex');
+  return crypto.createHash('md5').update(str).digest('hex');
 }
 
 // Generate own cache key
@@ -169,8 +166,8 @@ Please take a moment to read our contributing guidelines if you haven't yet done
 [node-url]: https://nodejs.org
 [deps]: https://david-dm.org/webpack-contrib/cache-loader.svg
 [deps-url]: https://david-dm.org/webpack-contrib/cache-loader
-[tests]: https://dev.azure.com/webpack-contrib/cache-loader/_apis/build/status/webpack-contrib.cache-loader?branchName=master
-[tests-url]: https://dev.azure.com/webpack-contrib/cache-loader/_build/latest?definitionId=4&branchName=master
+[tests]: https://github.com/webpack-contrib/cache-loader/workflows/cache-loader/badge.svg
+[tests-url]: https://github.com/webpack-contrib/cache-loader/actions
 [cover]: https://codecov.io/gh/webpack-contrib/cache-loader/branch/master/graph/badge.svg
 [cover-url]: https://codecov.io/gh/webpack-contrib/cache-loader
 [chat]: https://badges.gitter.im/webpack/webpack.svg

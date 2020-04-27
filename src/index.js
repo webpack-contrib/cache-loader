@@ -71,6 +71,7 @@ function loader(...args) {
   // we don't want to write or update any cache file
   if (readOnly) {
     this.callback(null, ...args);
+
     return;
   }
 
@@ -120,11 +121,14 @@ function loader(...args) {
         callback(null, ...args);
         return;
       }
+
       if (!cache) {
         callback(null, ...args);
         return;
       }
+
       const [deps, contextDeps] = taskResults;
+
       writeFn(
         data.cacheKey,
         {
@@ -171,6 +175,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 
   data.remainingRequest = remainingRequest;
   data.cacheKey = cacheKeyFn(options, data.remainingRequest);
+
   readFn(data.cacheKey, (readErr, cacheData) => {
     if (readErr) {
       callback();
@@ -187,7 +192,9 @@ function pitch(remainingRequest, prevRequest, dataInput) {
       callback();
       return;
     }
+
     const FS = this.fs || fs;
+
     async.each(
       cacheData.dependencies.concat(cacheData.contextDependencies),
       (dep, eachCallback) => {
@@ -214,6 +221,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 
           const compStats = stats;
           const compDep = contextDep;
+
           if (precision > 1) {
             ['atime', 'mtime', 'ctime', 'birthtime'].forEach((key) => {
               const msKey = `${key}Ms`;
@@ -230,8 +238,10 @@ function pitch(remainingRequest, prevRequest, dataInput) {
           // we not read from cache
           if (compareFn(compStats, compDep) !== true) {
             eachCallback(true);
+
             return;
           }
+
           eachCallback();
         });
       },
@@ -239,16 +249,20 @@ function pitch(remainingRequest, prevRequest, dataInput) {
         if (err) {
           data.startTime = Date.now();
           callback();
+
           return;
         }
+
         cacheData.dependencies.forEach((dep) =>
           this.addDependency(pathWithCacheContext(cacheContext, dep.path))
         );
+
         cacheData.contextDependencies.forEach((dep) =>
           this.addContextDependency(
             pathWithCacheContext(cacheContext, dep.path)
           )
         );
+
         callback(null, ...cacheData.result);
       }
     );
@@ -256,10 +270,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 }
 
 function digest(str) {
-  return crypto
-    .createHash('md5')
-    .update(str)
-    .digest('hex');
+  return crypto.createHash('md4').update(str).digest('hex');
 }
 
 const directories = new Set();
@@ -272,9 +283,10 @@ function write(key, data, callback) {
     // for performance skip creating directory
     fs.writeFile(key, content, 'utf-8', callback);
   } else {
-    mkdirp(dirname, (mkdirErr) => {
+    mkdirp(dirname).then((mkdirErr) => {
       if (mkdirErr) {
         callback(mkdirErr);
+
         return;
       }
 
@@ -289,11 +301,13 @@ function read(key, callback) {
   fs.readFile(key, 'utf-8', (err, content) => {
     if (err) {
       callback(err);
+
       return;
     }
 
     try {
       const data = BJSON.parse(content);
+
       callback(null, data);
     } catch (e) {
       callback(e);

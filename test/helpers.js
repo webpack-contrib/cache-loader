@@ -2,7 +2,7 @@ const os = require('os');
 const path = require('path');
 
 const del = require('del');
-const MemoryFS = require('memory-fs');
+const { createFsFromVolume, Volume } = require('memfs');
 const uuidV4 = require('uuid/v4');
 const webpack = require('webpack');
 
@@ -79,8 +79,12 @@ function compile(fixture, config = {}, options = {}) {
 
   const compiler = webpack(config);
 
-  if (!options.output) {
-    compiler.outputFileSystem = new MemoryFS();
+  if (!config.outputFileSystem) {
+    const outputFileSystem = createFsFromVolume(new Volume());
+    // Todo remove when we drop webpack@4 support
+    outputFileSystem.join = path.join.bind(path);
+
+    compiler.outputFileSystem = outputFileSystem;
   }
 
   return new Promise((resolve, reject) =>
