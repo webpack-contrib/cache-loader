@@ -25,7 +25,6 @@ const defaults = {
   cacheDirectory: findCacheDir({ name: 'cache-loader' }) || os.tmpdir(),
   cacheIdentifier: `cache-loader:${pkg.version} ${env}`,
   cacheKey,
-  compare,
   precision: 0,
   read,
   readOnly: false,
@@ -236,10 +235,6 @@ function cacheKey(options, request) {
   const hash = utils.digest(`${cacheIdentifier}\n${request}`);
 
   return path.join(cacheDirectory, `${hash}.json`);
-}
-
-function compare(stats, dep) {
-  return stats.mtime.getTime() === dep.mtime;
 }
 
 export const raw = true;

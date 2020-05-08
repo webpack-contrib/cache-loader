@@ -3,14 +3,14 @@ const fs = require('fs');
 
 const utils = require('../util');
 
+const localCache = {};
+
 function defaultCompare(stats, dep) {
   return stats.hash === dep.hash;
 }
 
 function createModeFns(options) {
   const { readOnly, compare: compareFn = defaultCompare } = options;
-
-  const cache = {};
 
   return {
     validDepDetails(dep, eachCallback) {
@@ -21,7 +21,7 @@ function createModeFns(options) {
         path: utils.pathWithCacheContext(options.cacheContext, dep.path),
       };
 
-      const cachedHash = cache(contextDep.path);
+      const cachedHash = localCache[contextDep.path];
 
       function resolve(hash) {
         const compStats = {
@@ -33,7 +33,7 @@ function createModeFns(options) {
         // If the compare function returns false
         // we not read from cache
         if (compareFn(compStats, compDep) !== true) {
-          eachCallback(true, hash);
+          eachCallback(true);
           return;
         }
         eachCallback();
@@ -55,6 +55,7 @@ function createModeFns(options) {
           }
 
           const currentHash = utils.digest(bdata);
+          localCache[contextDep.path] = currentHash;
 
           resolve(currentHash);
         });

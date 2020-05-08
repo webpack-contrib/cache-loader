@@ -2,8 +2,12 @@ const fs = require('fs');
 
 const utils = require('../util');
 
+function defaultCompare(stats, dep) {
+  return stats.mtime.getTime() === dep.mtime;
+}
+
 module.exports = function createModeFns(options) {
-  const { readOnly, precision, compare: compareFn } = options;
+  const { readOnly, precision, compare: compareFn = defaultCompare } = options;
   return {
     validDepDetails(dep, eachCallback) {
       // Applying reverse path transformation, in case they are relatives, when
