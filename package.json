@@ -1,12 +1,12 @@
 {
-  "name": "cache-loader",
+  "name": "cache-loader-hash",
   "version": "4.1.0",
   "description": "Caches the result of following loaders on disk.",
   "license": "MIT",
-  "repository": "webpack-contrib/cache-loader",
+  "repository": "fxxjdedd/cache-loader",
   "author": "Tobias Koppers @sokra",
-  "homepage": "https://github.com/webpack-contrib/cache-loader",
-  "bugs": "https://github.com/webpack-contrib/cache-loader/issues",
+  "homepage": "https://github.com/fxxjdedd/cache-loader",
+  "bugs": "https://github.com/fxxjdedd/cache-loader/issues",
   "main": "dist/cjs.js",
   "engines": {
     "node": ">= 8.9.0"
