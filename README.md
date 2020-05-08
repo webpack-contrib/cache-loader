@@ -10,6 +10,10 @@ Added the mode option to the `cache-loader` options, supporting `mtime` (default
 
 # Usage
 
+```bash
+npm install cache-loader-hash --save-dev
+```
+
 ```js
 webpackChain.module
   .rule('js') // or ts, tsx, vue...
