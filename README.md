@@ -4,14 +4,6 @@
   </a>
 </div>
 
-[![npm][npm]][npm-url]
-[![node][node]][node-url]
-[![deps][deps]][deps-url]
-[![tests][tests]][tests-url]
-[![coverage][cover]][cover-url]
-[![chat][chat]][chat-url]
-[![size][size]][size-url]
-
 # cache-loader-hash
 
 Added the mode option to the `cache-loader` options, supporting `mtime` (default) and `hash`.
@@ -22,12 +14,16 @@ Added the mode option to the `cache-loader` options, supporting `mtime` (default
 webpackChain.module
   .rule('js') // or ts, tsx, vue...
   .use('cache-loader')
-  .loader(require.resolve('cache-loader'))
+  .loader(require.resolve('cache-loader-hash'))
   .tap((options) => {
     options.mode = 'hash';
     return options;
   });
 ```
+
+# No Breaking Change
+
+No breaking change when using `mtime` mode.
 
 # Why
 
