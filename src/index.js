@@ -37,11 +37,7 @@ function getModeFns(options, context) {
   const createModeFns =
     // eslint-disable-next-line
     options.mode === 'hash' ? require('./mode/hash') : require('./mode/mtime');
-  // context.fs can be undefined
-  // e.g when using the thread-loader
-  // fallback to the fs module
-  const FS = context.fs || fs;
-  return createModeFns(options, FS, context);
+  return createModeFns(options, context);
 }
 
 // NOTE: We should only apply `utils.pathWithCacheContext` transformations
@@ -72,7 +68,34 @@ function loader(...args) {
   );
   const contextDependencies = this.getContextDependencies();
 
-  const { toDepDetails, closureObj } = getModeFns(options, this);
+  // Should the file get cached?
+  let cache = true;
+  // this.fs can be undefined
+  // e.g when using the thread-loader
+  // fallback to the fs module
+  const FS = this.fs || fs;
+  const toDepDetails = (dep, mapCallback) => {
+    FS.stat(dep, (err, stats) => {
+      if (err) {
+        mapCallback(err);
+        return;
+      }
+
+      const mtime = stats.mtime.getTime();
+
+      if (mtime / 1000 >= Math.floor(data.startTime / 1000)) {
+        // Don't trust mtime.
+        // File was changed while compiling
+        // or it could be an inaccurate filesystem.
+        cache = false;
+      }
+
+      mapCallback(null, {
+        path: utils.pathWithCacheContext(options.cacheContext, dep),
+        mtime,
+      });
+    });
+  };
   async.parallel(
     [
       (cb) => async.mapLimit(dependencies, 20, toDepDetails, cb),
@@ -83,7 +106,7 @@ function loader(...args) {
         callback(null, ...args);
         return;
       }
-      if (!closureObj.cache) {
+      if (!cache) {
         callback(null, ...args);
         return;
       }
@@ -120,7 +143,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
     baseDataPath: 'options',
   });
 
-  const { cacheContext, cacheKey: cacheKeyFn, read: readFn, mode } = options;
+  const { cacheContext, cacheKey: cacheKeyFn, read: readFn } = options;
 
   const callback = this.async();
   const data = dataInput;
@@ -145,17 +168,13 @@ function pitch(remainingRequest, prevRequest, dataInput) {
       callback();
       return;
     }
-    const { validDepDetails } = getModeFns(options, this);
+    const { validDepDetails } = getModeFns(options);
     async.each(
       cacheData.dependencies.concat(cacheData.contextDependencies),
       validDepDetails,
-      (err, val) => {
+      (err) => {
         if (err) {
-          if (mode === 'hash') {
-            data.hash = val;
-          } else {
-            data.startTime = val;
-          }
+          data.startTime = Date.now();
           callback();
           return;
         }

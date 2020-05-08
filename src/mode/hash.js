@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-const fsLib = require('fs');
+const fs = require('fs');
 
 const utils = require('../util');
 
@@ -7,49 +7,12 @@ function defaultCompare(stats, dep) {
   return stats.hash === dep.hash;
 }
 
-/**
- *
- * @param {*} options
- * @param {fsLib} fs
- * @param {*} context
- */
-function createModeFns(options, fs, context) {
-  const closureObj = {
-    // Should the file get cached?
-    cache: true,
-  };
+function createModeFns(options) {
   const { readOnly, compare: compareFn = defaultCompare } = options;
-
-  const { data } = context;
 
   const cache = {};
 
   return {
-    toDepDetails(dep, mapCallback) {
-      const cachedHash = cache[dep];
-
-      function resolve(hash) {
-        if (hash === data.hash) {
-          closureObj.cache = false;
-        }
-        mapCallback(null, {
-          path: utils.pathWithCacheContext(options.cacheContext, dep),
-          hash,
-        });
-      }
-
-      if (!cachedHash) {
-        fs.readFile(dep, (err, bdata) => {
-          if (err) {
-            mapCallback(err);
-            return;
-          }
-          resolve((cache[dep] = utils.digest(bdata)));
-        });
-      } else {
-        resolve(cachedHash);
-      }
-    },
     validDepDetails(dep, eachCallback) {
       // Applying reverse path transformation, in case they are relatives, when
       // reading from cache
@@ -99,7 +62,6 @@ function createModeFns(options, fs, context) {
         resolve(cachedHash);
       }
     },
-    closureObj,
   };
 }
 

@@ -1,44 +1,10 @@
-// eslint-disable-next-line no-unused-vars
-const fsLib = require('fs');
+const fs = require('fs');
 
 const utils = require('../util');
 
-/**
- *
- * @param {*} options
- * @param {fsLib} fs
- * @param {*} context
- */
-module.exports = function createModeFns(options, fs, context) {
-  const closureObj = {
-    // Should the file get cached?
-    cache: true,
-  };
+module.exports = function createModeFns(options) {
   const { readOnly, precision, compare: compareFn } = options;
-  const { data } = context;
   return {
-    toDepDetails(dep, mapCallback) {
-      fs.stat(dep, (err, stats) => {
-        if (err) {
-          mapCallback(err);
-          return;
-        }
-
-        const mtime = stats.mtime.getTime();
-
-        if (mtime / 1000 >= Math.floor(data.startTime / 1000)) {
-          // Don't trust mtime.
-          // File was changed while compiling
-          // or it could be an inaccurate filesystem.
-          closureObj.cache = false;
-        }
-
-        mapCallback(null, {
-          path: utils.pathWithCacheContext(options.cacheContext, dep),
-          mtime,
-        });
-      });
-    },
     validDepDetails(dep, eachCallback) {
       // Applying reverse path transformation, in case they are relatives, when
       // reading from cache
@@ -78,12 +44,11 @@ module.exports = function createModeFns(options, fs, context) {
         // If the compare function returns false
         // we not read from cache
         if (compareFn(compStats, compDep) !== true) {
-          eachCallback(true, Date.now());
+          eachCallback(true);
           return;
         }
         eachCallback();
       });
     },
-    closureObj,
   };
 };
