@@ -36,6 +36,10 @@
     "write": {
       "description": "Allows you to override default write cache data to file (e.g. Redis, memcached).",
       "instanceof": "Function"
+    },
+    "mode": {
+      "description": "Allows you to override default cache mode, default is mtime, hash is another option",
+      "type": "string"
     }
   },
   "additionalProperties": false

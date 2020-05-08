@@ -5,7 +5,6 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const async = require('neo-async');
-const crypto = require('crypto');
 const mkdirp = require('mkdirp');
 const findCacheDir = require('find-cache-dir');
 const BJSON = require('buffer-json');
@@ -19,6 +18,8 @@ const env = process.env.NODE_ENV || 'development';
 
 const schema = require('./options.json');
 
+const utils = require('./util');
+
 const defaults = {
   cacheContext: '',
   cacheDirectory: findCacheDir({ name: 'cache-loader' }) || os.tmpdir(),
@@ -29,31 +30,21 @@ const defaults = {
   read,
   readOnly: false,
   write,
+  mode: 'mtime',
 };
 
-function pathWithCacheContext(cacheContext, originalPath) {
-  if (!cacheContext) {
-    return originalPath;
-  }
-
-  if (originalPath.includes(cacheContext)) {
-    return originalPath
-      .split('!')
-      .map((subPath) => path.relative(cacheContext, subPath))
-      .join('!');
-  }
-
-  return originalPath
-    .split('!')
-    .map((subPath) => path.resolve(cacheContext, subPath))
-    .join('!');
+function getModeFns(options, context) {
+  const createModeFns =
+    // eslint-disable-next-line
+    options.mode === 'hash' ? require('./mode/hash') : require('./mode/mtime');
+  // context.fs can be undefined
+  // e.g when using the thread-loader
+  // fallback to the fs module
+  const FS = context.fs || fs;
+  return createModeFns(options, FS, context);
 }
 
-function roundMs(mtime, precision) {
-  return Math.floor(mtime / precision) * precision;
-}
-
-// NOTE: We should only apply `pathWithCacheContext` transformations
+// NOTE: We should only apply `utils.pathWithCacheContext` transformations
 // right before writing. Every other internal steps with the paths
 // should be accomplish over absolute paths. Otherwise we have the risk
 // to break watchpack -> chokidar watch logic  over webpack@4 --watch
@@ -81,35 +72,7 @@ function loader(...args) {
   );
   const contextDependencies = this.getContextDependencies();
 
-  // Should the file get cached?
-  let cache = true;
-  // this.fs can be undefined
-  // e.g when using the thread-loader
-  // fallback to the fs module
-  const FS = this.fs || fs;
-  const toDepDetails = (dep, mapCallback) => {
-    FS.stat(dep, (err, stats) => {
-      if (err) {
-        mapCallback(err);
-        return;
-      }
-
-      const mtime = stats.mtime.getTime();
-
-      if (mtime / 1000 >= Math.floor(data.startTime / 1000)) {
-        // Don't trust mtime.
-        // File was changed while compiling
-        // or it could be an inaccurate filesystem.
-        cache = false;
-      }
-
-      mapCallback(null, {
-        path: pathWithCacheContext(options.cacheContext, dep),
-        mtime,
-      });
-    });
-  };
-
+  const { toDepDetails, closureObj } = getModeFns(options, this);
   async.parallel(
     [
       (cb) => async.mapLimit(dependencies, 20, toDepDetails, cb),
@@ -120,7 +83,7 @@ function loader(...args) {
         callback(null, ...args);
         return;
       }
-      if (!cache) {
+      if (!closureObj.cache) {
         callback(null, ...args);
         return;
       }
@@ -128,7 +91,7 @@ function loader(...args) {
       writeFn(
         data.cacheKey,
         {
-          remainingRequest: pathWithCacheContext(
+          remainingRequest: utils.pathWithCacheContext(
             options.cacheContext,
             data.remainingRequest
           ),
@@ -145,7 +108,7 @@ function loader(...args) {
   );
 }
 
-// NOTE: We should apply `pathWithCacheContext` transformations
+// NOTE: We should apply `utils.pathWithCacheContext` transformations
 // right after reading. Every other internal steps with the paths
 // should be accomplish over absolute paths. Otherwise we have the risk
 // to break watchpack -> chokidar watch logic  over webpack@4 --watch
@@ -157,14 +120,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
     baseDataPath: 'options',
   });
 
-  const {
-    cacheContext,
-    cacheKey: cacheKeyFn,
-    compare: compareFn,
-    read: readFn,
-    readOnly,
-    precision,
-  } = options;
+  const { cacheContext, cacheKey: cacheKeyFn, read: readFn, mode } = options;
 
   const callback = this.async();
   const data = dataInput;
@@ -180,86 +136,41 @@ function pitch(remainingRequest, prevRequest, dataInput) {
     // We need to patch every path within data on cache with the cacheContext,
     // or it would cause problems when watching
     if (
-      pathWithCacheContext(options.cacheContext, cacheData.remainingRequest) !==
-      data.remainingRequest
+      utils.pathWithCacheContext(
+        options.cacheContext,
+        cacheData.remainingRequest
+      ) !== data.remainingRequest
     ) {
       // in case of a hash conflict
       callback();
       return;
     }
-    const FS = this.fs || fs;
+    const { validDepDetails } = getModeFns(options, this);
     async.each(
       cacheData.dependencies.concat(cacheData.contextDependencies),
-      (dep, eachCallback) => {
-        // Applying reverse path transformation, in case they are relatives, when
-        // reading from cache
-        const contextDep = {
-          ...dep,
-          path: pathWithCacheContext(options.cacheContext, dep.path),
-        };
-
-        FS.stat(contextDep.path, (statErr, stats) => {
-          if (statErr) {
-            eachCallback(statErr);
-            return;
-          }
-
-          // When we are under a readOnly config on cache-loader
-          // we don't want to emit any other error than a
-          // file stat error
-          if (readOnly) {
-            eachCallback();
-            return;
-          }
-
-          const compStats = stats;
-          const compDep = contextDep;
-          if (precision > 1) {
-            ['atime', 'mtime', 'ctime', 'birthtime'].forEach((key) => {
-              const msKey = `${key}Ms`;
-              const ms = roundMs(stats[msKey], precision);
-
-              compStats[msKey] = ms;
-              compStats[key] = new Date(ms);
-            });
-
-            compDep.mtime = roundMs(dep.mtime, precision);
-          }
-
-          // If the compare function returns false
-          // we not read from cache
-          if (compareFn(compStats, compDep) !== true) {
-            eachCallback(true);
-            return;
-          }
-          eachCallback();
-        });
-      },
-      (err) => {
+      validDepDetails,
+      (err, val) => {
         if (err) {
-          data.startTime = Date.now();
+          if (mode === 'hash') {
+            data.hash = val;
+          } else {
+            data.startTime = val;
+          }
           callback();
           return;
         }
         cacheData.dependencies.forEach((dep) =>
-          this.addDependency(pathWithCacheContext(cacheContext, dep.path))
+          this.addDependency(utils.pathWithCacheContext(cacheContext, dep.path))
         );
         cacheData.contextDependencies.forEach((dep) =>
           this.addContextDependency(
-            pathWithCacheContext(cacheContext, dep.path)
+            utils.pathWithCacheContext(cacheContext, dep.path)
           )
         );
         callback(null, ...cacheData.result);
       }
     );
   });
-}
-
-function digest(str) {
-  return crypto
-    .createHash('md5')
-    .update(str)
-    .digest('hex');
 }
 
 const directories = new Set();
@@ -303,7 +214,7 @@ function read(key, callback) {
 
 function cacheKey(options, request) {
   const { cacheIdentifier, cacheDirectory } = options;
-  const hash = digest(`${cacheIdentifier}\n${request}`);
+  const hash = utils.digest(`${cacheIdentifier}\n${request}`);
 
   return path.join(cacheDirectory, `${hash}.json`);
 }
