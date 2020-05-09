@@ -3,6 +3,9 @@ const fs = require('fs');
 
 const utils = require('../util');
 
+const isDev = process.env.NODE_ENV === 'development';
+
+// NOTE: only use for building
 const localCache = {};
 
 function defaultCompare(stats, dep) {
@@ -23,7 +26,7 @@ function createModeFns(options) {
         });
       }
 
-      if (!cachedHash) {
+      if (isDev || !cachedHash) {
         fs.readFile(dep, (err, bdata) => {
           if (err) {
             mapCallback(err);
@@ -61,7 +64,7 @@ function createModeFns(options) {
         eachCallback();
       }
 
-      if (!cachedHash) {
+      if (isDev || !cachedHash) {
         fs.readFile(contextDep.path, (err, bdata) => {
           if (err) {
             eachCallback(err);
