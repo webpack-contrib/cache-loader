@@ -73,6 +73,8 @@ function loader(...args) {
   // e.g when using the thread-loader
   // fallback to the fs module
   const FS = this.fs || fs;
+  const { generateDepDetails } = getModeFns(options);
+
   const toDepDetails = (dep, mapCallback) => {
     FS.stat(dep, (err, stats) => {
       if (err) {
@@ -89,10 +91,7 @@ function loader(...args) {
         cache = false;
       }
 
-      mapCallback(null, {
-        path: utils.pathWithCacheContext(options.cacheContext, dep),
-        mtime,
-      });
+      generateDepDetails(dep, mtime, mapCallback);
     });
   };
   async.parallel(

@@ -9,6 +9,12 @@ function defaultCompare(stats, dep) {
 module.exports = function createModeFns(options) {
   const { readOnly, precision, compare: compareFn = defaultCompare } = options;
   return {
+    generateDepDetails(dep, mtime, mapCallback) {
+      mapCallback(null, {
+        path: utils.pathWithCacheContext(options.cacheContext, dep),
+        mtime,
+      });
+    },
     validDepDetails(dep, eachCallback) {
       // Applying reverse path transformation, in case they are relatives, when
       // reading from cache

@@ -13,6 +13,28 @@ function createModeFns(options) {
   const { readOnly, compare: compareFn = defaultCompare } = options;
 
   return {
+    generateDepDetails(dep, mtime, mapCallback) {
+      const cachedHash = localCache[dep];
+
+      function resolve(hash) {
+        mapCallback(null, {
+          path: utils.pathWithCacheContext(options.cacheContext, dep),
+          hash,
+        });
+      }
+
+      if (!cachedHash) {
+        fs.readFile(dep, (err, bdata) => {
+          if (err) {
+            mapCallback(err);
+            return;
+          }
+          resolve((localCache[dep] = utils.digest(bdata)));
+        });
+      } else {
+        resolve(cachedHash);
+      }
+    },
     validDepDetails(dep, eachCallback) {
       // Applying reverse path transformation, in case they are relatives, when
       // reading from cache
