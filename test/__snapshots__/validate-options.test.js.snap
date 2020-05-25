@@ -15,11 +15,11 @@ exports[`validate options error 1`] = `
 exports[`validate options unknown (pitch) 1`] = `
 "Invalid options object. Cache Loader (Pitch) has been initialised using an options object that does not match the API schema.
  - options has an unknown property 'unknown'. These properties are valid:
-   object { cacheContext?, cacheKey?, cacheIdentifier?, cacheDirectory?, compare?, precision?, read?, readOnly?, write? }"
+   object { cacheContext?, cacheKey?, cacheIdentifier?, cacheDirectory?, compare?, precision?, read?, readOnly?, write?, mode? }"
 `;
 
 exports[`validate options unknown 1`] = `
 "Invalid options object. Cache Loader has been initialised using an options object that does not match the API schema.
  - options has an unknown property 'unknown'. These properties are valid:
-   object { cacheContext?, cacheKey?, cacheIdentifier?, cacheDirectory?, compare?, precision?, read?, readOnly?, write? }"
+   object { cacheContext?, cacheKey?, cacheIdentifier?, cacheDirectory?, compare?, precision?, read?, readOnly?, write?, mode? }"
 `;
