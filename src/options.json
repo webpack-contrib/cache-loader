@@ -2,7 +2,7 @@
   "type": "object",
   "properties": {
     "cacheAddedFiles": {
-      "description": "Allow to caches the added files. By default it's not cached,",
+      "description": "Allow to caches the added files. By default it's not cached.",
       "type": "boolean"
     },
     "cacheContext": {
