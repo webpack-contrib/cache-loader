@@ -3,12 +3,12 @@
 */
 const fs = require('fs');
 const os = require('os');
+const v8 = require('v8');
 const path = require('path');
 const async = require('neo-async');
 const crypto = require('crypto');
 const mkdirp = require('mkdirp');
 const findCacheDir = require('find-cache-dir');
-const BJSON = require('buffer-json');
 
 const { getOptions } = require('loader-utils');
 const validateOptions = require('schema-utils');
@@ -266,11 +266,11 @@ const directories = new Set();
 
 function write(key, data, callback) {
   const dirname = path.dirname(key);
-  const content = BJSON.stringify(data);
+  const content = v8.serialize(data);
 
   if (directories.has(dirname)) {
     // for performance skip creating directory
-    fs.writeFile(key, content, 'utf-8', callback);
+    fs.writeFile(key, content, callback);
   } else {
     mkdirp(dirname, (mkdirErr) => {
       if (mkdirErr) {
@@ -280,20 +280,20 @@ function write(key, data, callback) {
 
       directories.add(dirname);
 
-      fs.writeFile(key, content, 'utf-8', callback);
+      fs.writeFile(key, content, callback);
     });
   }
 }
 
 function read(key, callback) {
-  fs.readFile(key, 'utf-8', (err, content) => {
+  fs.readFile(key, (err, content) => {
     if (err) {
       callback(err);
       return;
     }
 
     try {
-      const data = BJSON.parse(content);
+      const data = v8.deserialize(content);
       callback(null, data);
     } catch (e) {
       callback(e);
@@ -305,7 +305,7 @@ function cacheKey(options, request) {
   const { cacheIdentifier, cacheDirectory } = options;
   const hash = digest(`${cacheIdentifier}\n${request}`);
 
-  return path.join(cacheDirectory, `${hash}.json`);
+  return path.join(cacheDirectory, `${hash}.bin`);
 }
 
 function compare(stats, dep) {
