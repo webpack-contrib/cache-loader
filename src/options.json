@@ -1,6 +1,10 @@
 {
   "type": "object",
   "properties": {
+    "cacheAddedFiles": {
+      "description": "Allow to caches the added files. By default it's not cached,",
+      "type": "boolean"
+    },
     "cacheContext": {
       "description": "The default cache context in order to generate the cache relatively to a path. By default it will use absolute paths.",
       "type": "string"

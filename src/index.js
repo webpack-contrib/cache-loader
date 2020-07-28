@@ -134,6 +134,7 @@ function loader(...args) {
           ),
           dependencies: deps,
           contextDependencies: contextDeps,
+          addedFiles: data.addedFiles,
           result: args,
         },
         () => {
@@ -168,9 +169,19 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 
   const callback = this.async();
   const data = dataInput;
+  const { emitFile } = this;
 
   data.remainingRequest = remainingRequest;
   data.cacheKey = cacheKeyFn(options, data.remainingRequest);
+
+  data.addedFiles = [];
+  if (options.cacheAddedFiles) {
+    this.emitFile = (name, content, sourceMap) => {
+      data.cacheAddedFiles.push({ name, content, sourceMap });
+      return emitFile(name, content, sourceMap);
+    };
+  }
+
   readFn(data.cacheKey, (readErr, cacheData) => {
     if (readErr) {
       callback();
@@ -249,6 +260,9 @@ function pitch(remainingRequest, prevRequest, dataInput) {
             pathWithCacheContext(cacheContext, dep.path)
           )
         );
+        cacheData.addedFiles.forEach(({ name, content, sourceMap }) => {
+          emitFile(name, content, sourceMap);
+        });
         callback(null, ...cacheData.result);
       }
     );
