@@ -40,7 +40,7 @@ describe('compare option', () => {
   });
 
   afterAll(() => {
-    del.sync(mockRandomTmpDir);
+    del.sync(mockRandomTmpDir, { force: true });
   });
 
   it('should call compare function', async () => {

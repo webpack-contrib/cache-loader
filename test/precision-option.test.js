@@ -37,7 +37,7 @@ describe('precision option', () => {
   });
 
   afterAll(() => {
-    del.sync(mockRandomTmpDir);
+    del.sync(mockRandomTmpDir, { force: true });
   });
 
   it('should not apply precision', async () => {
