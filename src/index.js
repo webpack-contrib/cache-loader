@@ -177,7 +177,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
   data.addedFiles = [];
   if (options.cacheAddedFiles) {
     this.emitFile = (name, content, sourceMap) => {
-      data.cacheAddedFiles.push({ name, content, sourceMap });
+      data.addedFiles.push({ name, content, sourceMap });
       return emitFile(name, content, sourceMap);
     };
   }

@@ -45,6 +45,12 @@ describe('cacheAddedFiles option', () => {
     const testId = './img/index.js';
     const stats = await webpack(testId, mockWebpackWithAddedFilesConfig);
     const cachedStats = await webpack(testId, mockWebpackWithAddedFilesConfig);
+
+    expect(stats.compilation.warnings).toMatchSnapshot('warnings');
+    expect(stats.compilation.errors).toMatchSnapshot('errors');
+    expect(cachedStats.compilation.warnings).toMatchSnapshot('warnings');
+    expect(cachedStats.compilation.errors).toMatchSnapshot('errors');
+
     expect(stats.compilation.assets[cachedImageFilename]).toEqual(
       cachedStats.compilation.assets[cachedImageFilename]
     );
