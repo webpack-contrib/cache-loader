@@ -1,6 +1,4 @@
-/* eslint-disable
-  import/order
-*/
+/* eslint-disable import/order */
 const fs = require('fs');
 const os = require('os');
 const v8 = require('v8');
@@ -169,7 +167,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 
   const callback = this.async();
   const data = dataInput;
-  const { emitFile } = this;
+  const emitFile = this.emitFile.bind(this);
 
   data.remainingRequest = remainingRequest;
   data.cacheKey = cacheKeyFn(options, data.remainingRequest);
@@ -270,10 +268,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 }
 
 function digest(str) {
-  return crypto
-    .createHash('md5')
-    .update(str)
-    .digest('hex');
+  return crypto.createHash('md5').update(str).digest('hex');
 }
 
 const directories = new Set();
@@ -286,16 +281,15 @@ function write(key, data, callback) {
     // for performance skip creating directory
     fs.writeFile(key, content, callback);
   } else {
-    mkdirp(dirname, (mkdirErr) => {
-      if (mkdirErr) {
+    mkdirp(dirname).then(
+      () => {
+        directories.add(dirname);
+        fs.writeFile(key, content, callback);
+      },
+      (mkdirErr) => {
         callback(mkdirErr);
-        return;
       }
-
-      directories.add(dirname);
-
-      fs.writeFile(key, content, callback);
-    });
+    );
   }
 }
 
