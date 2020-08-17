@@ -21,8 +21,6 @@ const mockWebpackWithAddedFilesConfig = {
   },
 };
 
-const cachedImageFilename = '92be28d7dfd7b29034ae9500cc94e7f2.png';
-
 describe('cacheAddedFiles option', () => {
   beforeEach(() => {});
 
@@ -31,10 +29,16 @@ describe('cacheAddedFiles option', () => {
     del.sync(mockRandomTmpDirForAddedFiles, { force: true });
   });
 
+  let cachedImageFilename;
+
   it('should not cache added files', async () => {
     const testId = './img/index.js';
     const stats = await webpack(testId, mockWebpackConfig);
     const cachedStats = await webpack(testId, mockWebpackConfig);
+
+    cachedImageFilename = Object.keys(stats.compilation.assets).find((c) =>
+      c.endsWith('.png')
+    );
 
     expect(stats.compilation.warnings).toMatchSnapshot('warnings');
     expect(stats.compilation.errors).toMatchSnapshot('errors');
