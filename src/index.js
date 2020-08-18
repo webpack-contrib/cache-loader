@@ -174,9 +174,9 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 
   data.addedFiles = [];
   if (options.cacheAddedFiles) {
-    this.emitFile = (name, content, sourceMap) => {
-      data.addedFiles.push({ name, content, sourceMap });
-      return emitFile(name, content, sourceMap);
+    this.emitFile = (name, content, sourceMap, assetInfo) => {
+      data.addedFiles.push({ name, content, sourceMap, assetInfo });
+      return emitFile(name, content, sourceMap, assetInfo);
     };
   }
 
@@ -258,9 +258,11 @@ function pitch(remainingRequest, prevRequest, dataInput) {
             pathWithCacheContext(cacheContext, dep.path)
           )
         );
-        cacheData.addedFiles.forEach(({ name, content, sourceMap }) => {
-          emitFile(name, content, sourceMap);
-        });
+        cacheData.addedFiles.forEach(
+          ({ name, content, sourceMap, assetInfo }) => {
+            emitFile(name, content, sourceMap, assetInfo);
+          }
+        );
         callback(null, ...cacheData.result);
       }
     );
