@@ -1,3 +1,8 @@
+# DEPRECATED
+
+Consider upgrading webpack to version 5 and setup cache https://webpack.js.org/configuration/other-options/#cache
+
+---
 <div align="center">
   <a href="https://webpack.js.org/">
     <img width="200" height="200" src="https://cdn.rawgit.com/webpack/media/e7485eb2/logo/icon-square-big.svg">
