@@ -1,14 +1,12 @@
-/* eslint-disable
-  import/order
-*/
+/* eslint-disable import/order */
 const fs = require('fs');
 const os = require('os');
+const v8 = require('v8');
 const path = require('path');
 const async = require('neo-async');
 const crypto = require('crypto');
 const mkdirp = require('mkdirp');
 const findCacheDir = require('find-cache-dir');
-const BJSON = require('buffer-json');
 
 const { getOptions } = require('loader-utils');
 const validateOptions = require('schema-utils');
@@ -134,6 +132,7 @@ function loader(...args) {
           ),
           dependencies: deps,
           contextDependencies: contextDeps,
+          addedFiles: data.addedFiles,
           result: args,
         },
         () => {
@@ -168,9 +167,19 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 
   const callback = this.async();
   const data = dataInput;
+  const emitFile = this.emitFile.bind(this);
 
   data.remainingRequest = remainingRequest;
   data.cacheKey = cacheKeyFn(options, data.remainingRequest);
+
+  data.addedFiles = [];
+  if (options.cacheAddedFiles) {
+    this.emitFile = (name, content, sourceMap, assetInfo) => {
+      data.addedFiles.push({ name, content, sourceMap, assetInfo });
+      return emitFile(name, content, sourceMap, assetInfo);
+    };
+  }
+
   readFn(data.cacheKey, (readErr, cacheData) => {
     if (readErr) {
       callback();
@@ -249,6 +258,11 @@ function pitch(remainingRequest, prevRequest, dataInput) {
             pathWithCacheContext(cacheContext, dep.path)
           )
         );
+        cacheData.addedFiles.forEach(
+          ({ name, content, sourceMap, assetInfo }) => {
+            emitFile(name, content, sourceMap, assetInfo);
+          }
+        );
         callback(null, ...cacheData.result);
       }
     );
@@ -256,44 +270,40 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 }
 
 function digest(str) {
-  return crypto
-    .createHash('md5')
-    .update(str)
-    .digest('hex');
+  return crypto.createHash('md5').update(str).digest('hex');
 }
 
 const directories = new Set();
 
 function write(key, data, callback) {
   const dirname = path.dirname(key);
-  const content = BJSON.stringify(data);
+  const content = v8.serialize(data);
 
   if (directories.has(dirname)) {
     // for performance skip creating directory
-    fs.writeFile(key, content, 'utf-8', callback);
+    fs.writeFile(key, content, callback);
   } else {
-    mkdirp(dirname, (mkdirErr) => {
-      if (mkdirErr) {
+    mkdirp(dirname).then(
+      () => {
+        directories.add(dirname);
+        fs.writeFile(key, content, callback);
+      },
+      (mkdirErr) => {
         callback(mkdirErr);
-        return;
       }
-
-      directories.add(dirname);
-
-      fs.writeFile(key, content, 'utf-8', callback);
-    });
+    );
   }
 }
 
 function read(key, callback) {
-  fs.readFile(key, 'utf-8', (err, content) => {
+  fs.readFile(key, (err, content) => {
     if (err) {
       callback(err);
       return;
     }
 
     try {
-      const data = BJSON.parse(content);
+      const data = v8.deserialize(content);
       callback(null, data);
     } catch (e) {
       callback(e);
@@ -305,7 +315,7 @@ function cacheKey(options, request) {
   const { cacheIdentifier, cacheDirectory } = options;
   const hash = digest(`${cacheIdentifier}\n${request}`);
 
-  return path.join(cacheDirectory, `${hash}.json`);
+  return path.join(cacheDirectory, `${hash}.bin`);
 }
 
 function compare(stats, dep) {

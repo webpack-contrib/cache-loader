@@ -53,6 +53,7 @@ module.exports = {
 
 |         Name          |                       Type                       |                        n Default                        | Description                                                                                                                                                            |
 | :-------------------: | :----------------------------------------------: | :-----------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`cacheAddedFiles`** |                   `{Boolean}`                    |                         `false`                         | Allow to caches the added files. By default it's not cached.                                                                                                           |
 |  **`cacheContext`**   |                    `{String}`                    |                       `undefined`                       | Allows you to override the default cache context in order to generate the cache relatively to a path. By default it will use absolute paths                            |
 |    **`cacheKey`**     |    `{Function(options, request) -> {String}}`    |                       `undefined`                       | Allows you to override default cache key generator                                                                                                                     |
 | **`cacheDirectory`**  |                    `{String}`                    | `findCacheDir({ name: 'cache-loader' }) or os.tmpdir()` | Provide a cache directory where cache items should be stored (used for default read/write implementation)                                                              |
@@ -99,10 +100,7 @@ const crypto = require('crypto');
 const BUILD_CACHE_TIMEOUT = 24 * 3600; // 1 day
 
 function digest(str) {
-  return crypto
-    .createHash('md5')
-    .update(str)
-    .digest('hex');
+  return crypto.createHash('md5').update(str).digest('hex');
 }
 
 // Generate own cache key

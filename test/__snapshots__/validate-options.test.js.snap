@@ -1,25 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`validate options error (pitch) 1`] = `
-"Invalid options object. Cache Loader (Pitch) has been initialised using an options object that does not match the API schema.
+"Invalid options object. Cache Loader (Pitch) has been initialized using an options object that does not match the API schema.
  - options.cacheIdentifier should be a string.
    -> Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders (used for default read/write implementation)."
 `;
 
 exports[`validate options error 1`] = `
-"Invalid options object. Cache Loader has been initialised using an options object that does not match the API schema.
+"Invalid options object. Cache Loader has been initialized using an options object that does not match the API schema.
  - options.cacheIdentifier should be a string.
    -> Provide an invalidation identifier which is used to generate the hashes. You can use it for extra dependencies of loaders (used for default read/write implementation)."
 `;
 
 exports[`validate options unknown (pitch) 1`] = `
-"Invalid options object. Cache Loader (Pitch) has been initialised using an options object that does not match the API schema.
+"Invalid options object. Cache Loader (Pitch) has been initialized using an options object that does not match the API schema.
  - options has an unknown property 'unknown'. These properties are valid:
-   object { cacheContext?, cacheKey?, cacheIdentifier?, cacheDirectory?, compare?, precision?, read?, readOnly?, write? }"
+   object { cacheAddedFiles?, cacheContext?, cacheKey?, cacheIdentifier?, cacheDirectory?, compare?, precision?, read?, readOnly?, write? }"
 `;
 
 exports[`validate options unknown 1`] = `
-"Invalid options object. Cache Loader has been initialised using an options object that does not match the API schema.
+"Invalid options object. Cache Loader has been initialized using an options object that does not match the API schema.
  - options has an unknown property 'unknown'. These properties are valid:
-   object { cacheContext?, cacheKey?, cacheIdentifier?, cacheDirectory?, compare?, precision?, read?, readOnly?, write? }"
+   object { cacheAddedFiles?, cacheContext?, cacheKey?, cacheIdentifier?, cacheDirectory?, compare?, precision?, read?, readOnly?, write? }"
 `;

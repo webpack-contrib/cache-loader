@@ -3,7 +3,7 @@ const path = require('path');
 
 const del = require('del');
 const MemoryFS = require('memory-fs');
-const uuidV4 = require('uuid/v4');
+const { v4: uuidV4 } = require('uuid');
 const webpack = require('webpack');
 
 const moduleConfig = (config) => {
