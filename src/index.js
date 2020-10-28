@@ -57,7 +57,7 @@ function roundMs(mtime, precision) {
 // right before writing. Every other internal steps with the paths
 // should be accomplish over absolute paths. Otherwise we have the risk
 // to break watchpack -> chokidar watch logic  over webpack@4 --watch
-function loader(...args) {
+function loader(source, ...args) {
   const options = Object.assign({}, defaults, getOptions(this));
 
   validateOptions(schema, options, {
@@ -70,7 +70,7 @@ function loader(...args) {
   // In case we are under a readOnly mode on cache-loader
   // we don't want to write or update any cache file
   if (readOnly) {
-    this.callback(null, ...args);
+    this.callback(null, source, ...args);
     return;
   }
 
@@ -117,11 +117,11 @@ function loader(...args) {
     ],
     (err, taskResults) => {
       if (err) {
-        callback(null, ...args);
+        callback(null, source, ...args);
         return;
       }
       if (!cache) {
-        callback(null, ...args);
+        callback(null, source, ...args);
         return;
       }
       const [deps, contextDeps] = taskResults;
@@ -132,13 +132,14 @@ function loader(...args) {
             options.cacheContext,
             data.remainingRequest
           ),
+          source,
           dependencies: deps,
           contextDependencies: contextDeps,
-          result: args,
+          result: [source, ...args],
         },
         () => {
           // ignore errors here
-          callback(null, ...args);
+          callback(null, source, ...args);
         }
       );
     }
@@ -228,7 +229,7 @@ function pitch(remainingRequest, prevRequest, dataInput) {
 
           // If the compare function returns false
           // we not read from cache
-          if (compareFn(compStats, compDep) !== true) {
+          if (compareFn(compStats, compDep, cacheData) !== true) {
             eachCallback(true);
             return;
           }
